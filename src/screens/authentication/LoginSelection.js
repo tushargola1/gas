@@ -6,7 +6,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../styles/Theme";
 import { LinearGradient } from "expo-linear-gradient";
-import Button from "../../component/Button";
+import Button from "../../component/button/Button";
+import SmallSideButton from "../../component/button/SmallSideButton";
 
 const LoginSelection = () => {
   const navigation = useNavigation();
@@ -40,11 +41,11 @@ const LoginSelection = () => {
            onPress={() => navigation.navigate("login", { type: "consumer" })}
         />
 
-        <Button
+        <SmallSideButton
           title="Delivery Partner Login"
         onPress={() => navigation.navigate("login", { type: "delivery" })}
           icon={<Feather name="truck" size={24} color={COLORS.white} />}
-          style={{ backgroundColor: COLORS.primary }}
+          style={{ backgroundColor: COLORS.primary , width: '80%' , alignSelf: 'center'}}
         />
       </View>
     </LinearGradient>
@@ -77,5 +78,6 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 320,
     gap: 15,
+    
   },
 });

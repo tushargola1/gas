@@ -79,10 +79,10 @@ export default function Dashboard({ navigation }) {
               icon={FontAwesome}
               name="address-book"
               label="Address"
-              onPress={() => console.log("Face of School pressed")}
+           onPress={() => navigation.navigate("profile", { screen: "address" })}
             />
             <DashboardCard
-              icon={Octicons }
+              icon={Octicons}
               name="history"
               label="Booking History"
               onPress={() => console.log("My Photos pressed")}

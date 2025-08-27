@@ -39,6 +39,12 @@ function CustomDrawerContent({ navigation, state }) {
         >
           <Text style={[styles.menuText, currentRoute === "profile" && styles.menuTextActive]}>Profile</Text>
         </Pressable>
+        <Pressable
+          style={[styles.menuItem, currentRoute === "address" && styles.menuActive]}
+          onPress={() => navigation.navigate("address", { screen: "address" })}
+        >
+          <Text style={[styles.menuText, currentRoute === "address" && styles.menuTextActive]}>Address</Text>
+        </Pressable>
       </View>
     </DrawerContentScrollView>
   );
@@ -46,7 +52,10 @@ function CustomDrawerContent({ navigation, state }) {
 
 export default function DrawerNavigator() {
   return (
-    <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />} initialRouteName="loginSelection">
+    <Drawer.Navigator 
+      drawerContent={(props) => <CustomDrawerContent {...props} />} 
+      initialRouteName="dashboard"
+    >
       {/* Auth Screens */}
       <Drawer.Screen name="splashScreen" component={SplashScreen} options={{ headerShown: false }} />
       <Drawer.Screen name="login" component={Login} options={{ headerShown: false }} />
@@ -63,6 +72,11 @@ export default function DrawerNavigator() {
       {/* Profile - With bottom tabs */}
       <Drawer.Screen 
         name="profile" 
+        component={MainTabs} 
+        options={{ headerShown: false }}
+      />
+      <Drawer.Screen 
+        name="address" 
         component={MainTabs} 
         options={{ headerShown: false }}
       />

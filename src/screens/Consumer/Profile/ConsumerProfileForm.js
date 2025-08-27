@@ -12,6 +12,11 @@ import Form from "./Form";
 export default function ConsumerProfileForm({ navigation }) {
   const insets = useSafeAreaInsets();
 
+  const handleBackPress = () => {
+    // Navigate to dashboard instead of going back to splash
+    navigation.getParent()?.navigate('dashboard');
+  };
+
   return (
     <LinearGradient
       style={{
@@ -29,7 +34,7 @@ export default function ConsumerProfileForm({ navigation }) {
 
       {/* Header */}
       <View style={styles.headerContainer}>
-        <Pressable onPress={() => navigation.navigate('dashboard')} style={styles.menuButton}>
+        <Pressable onPress={handleBackPress} style={styles.menuButton}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </Pressable>
         <View style={styles.headerTitleWrapper}>
@@ -86,8 +91,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     marginTop: 10,
     paddingHorizontal: gaps.paddingHorizontal,
-    paddingTop:6
-
+    paddingTop: 6
   },
   scrollContent: {
     paddingBottom: 10,

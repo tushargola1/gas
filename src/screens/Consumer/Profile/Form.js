@@ -1,31 +1,20 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../../../styles/Theme";
-import LinearGradientButton from "../../../component/LinearGradientButton";
+import LinearGradientButton from "../../../component/button/LinearGradientButton";
+import FormInput from "../../../component/FormInput";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   firmName: Yup.string().required("Firm Name is required"),
-
   number: Yup.string()
     .matches(/^[0-9]{10}$/, "Enter a valid 10-digit number")
     .required("Phone number is required"),
-
   email: Yup.string().email("Invalid email").required("Email is required"),
-
   permanentAddress: Yup.string().required("Permanent address is required"),
-
-  // Structured Delivery Address
   addressLine1: Yup.string().required("Address Line 1 is required"),
   addressLine2: Yup.string().required("Address Line 2 is required"),
   city: Yup.string().required("City is required"),
@@ -33,9 +22,7 @@ const validationSchema = Yup.object().shape({
   pincode: Yup.string()
     .matches(/^[0-9]{6}$/, "Enter a valid 6-digit pincode")
     .required("Pincode is required"),
-
   gst: Yup.string().required("GST number is required"),
-
   aadhar: Yup.string()
     .matches(/^[0-9]{12}$/, "Aadhar must be 12 digits")
     .required("Aadhar is required"),
@@ -62,12 +49,18 @@ export default function Form() {
       firmName: "",
       number: "",
       email: "",
-      permanentNumber: "",
-      address: "",
+      permanentAddress: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      pincode: "",
       gst: "",
       aadhar: "",
     },
     validationSchema,
+    validateOnChange: false, // validation only on submit
+    validateOnBlur: false,
     onSubmit: (values) => {
       console.log("Form Data: ", values);
       alert("Profile Updated!");
@@ -85,22 +78,21 @@ export default function Form() {
           <Image source={{ uri: image }} style={styles.profileImage} />
         ) : (
           <View
-            style={[
-              styles.profileImage,
-              {
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: COLORS.backgroundLight,
-              },
-            ]}
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: 20,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: COLORS.backgroundLight,
+            }}
           >
             <Text style={{ color: COLORS.textLight }}>+ Add Photo</Text>
           </View>
         )}
       </TouchableOpacity>
 
-      {/* Name */}
-      <Input
+      <FormInput
         label="Name"
         placeholder="Enter your full name"
         value={formik.values.name}
@@ -108,8 +100,7 @@ export default function Form() {
         error={formik.errors.name}
       />
 
-      {/* Firm Name */}
-      <Input
+      <FormInput
         label="Firm Name"
         placeholder="Enter your company/firm name"
         value={formik.values.firmName}
@@ -117,8 +108,7 @@ export default function Form() {
         error={formik.errors.firmName}
       />
 
-      {/* Number */}
-      <Input
+      <FormInput
         label="Number"
         placeholder="Enter your phone number"
         keyboardType="phone-pad"
@@ -127,8 +117,7 @@ export default function Form() {
         error={formik.errors.number}
       />
 
-      {/* Email */}
-      <Input
+      <FormInput
         label="Email"
         placeholder="Enter your email address"
         keyboardType="email-address"
@@ -137,8 +126,7 @@ export default function Form() {
         error={formik.errors.email}
       />
 
-      {/* Permanent Address */}
-      <Input
+      <FormInput
         label="Permanent Address"
         placeholder="Enter your permanent address"
         value={formik.values.permanentAddress}
@@ -146,8 +134,7 @@ export default function Form() {
         error={formik.errors.permanentAddress}
       />
 
-      {/* Address Line 1 */}
-      <Input
+      <FormInput
         label="Address Line 1"
         placeholder="Enter street, house no., etc."
         value={formik.values.addressLine1}
@@ -155,8 +142,7 @@ export default function Form() {
         error={formik.errors.addressLine1}
       />
 
-      {/* Address Line 2 */}
-      <Input
+      <FormInput
         label="Address Line 2"
         placeholder="Enter apartment, floor, landmark, etc."
         value={formik.values.addressLine2}
@@ -164,8 +150,7 @@ export default function Form() {
         error={formik.errors.addressLine2}
       />
 
-      {/* City */}
-      <Input
+      <FormInput
         label="City"
         placeholder="Enter your city"
         value={formik.values.city}
@@ -173,8 +158,7 @@ export default function Form() {
         error={formik.errors.city}
       />
 
-      {/* State */}
-      <Input
+      <FormInput
         label="State"
         placeholder="Enter your state"
         value={formik.values.state}
@@ -182,8 +166,7 @@ export default function Form() {
         error={formik.errors.state}
       />
 
-      {/* Pincode */}
-      <Input
+      <FormInput
         label="Pincode"
         placeholder="Enter 6-digit pincode"
         keyboardType="numeric"
@@ -192,8 +175,7 @@ export default function Form() {
         error={formik.errors.pincode}
       />
 
-      {/* GST */}
-      <Input
+      <FormInput
         label="GST Number"
         placeholder="Enter your GST number"
         value={formik.values.gst}
@@ -201,8 +183,7 @@ export default function Form() {
         error={formik.errors.gst}
       />
 
-      {/* Aadhar */}
-      <Input
+      <FormInput
         label="Aadhar Number"
         placeholder="Enter your Aadhar number"
         keyboardType="numeric"
@@ -213,41 +194,16 @@ export default function Form() {
 
       <LinearGradientButton
         onPress={formik.handleSubmit}
-        style={styles.submitButton}
         title="Update Profile"
       />
     </View>
   );
 }
 
-const Input = ({ label, error, ...props }) => (
-  <View style={{ marginBottom: 15 }}>
-    <Text style={styles.label}>{label}</Text>
-    <TextInput style={styles.input} {...props} />
-    {error && (
-      <Text style={{ color: "red", fontSize: 12, marginTop: 5 }}>{error}</Text>
-    )}
-  </View>
-);
-
-const styles = StyleSheet.create({
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 5,
-  },
-  input: {
-    backgroundColor: COLORS.backgroundLight,
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-  },
-  submitButton: {
-    marginVertical: 10,
-  },
+const styles = {
   profileImage: {
     width: 150,
     height: 150,
     borderRadius: 20,
   },
-});
+};

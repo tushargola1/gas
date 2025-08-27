@@ -12,7 +12,7 @@ import * as Animatable from "react-native-animatable";
 import { COLORS } from "../../styles/Theme";
 import { StatusBar } from "expo-status-bar";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
-import LinearGradientButton from "../../component/LinearGradientButton";
+import LinearGradientButton from "../../component/button/LinearGradientButton";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function Login({ navigation, route }) {

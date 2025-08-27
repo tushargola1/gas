@@ -1,6 +1,6 @@
 
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
-import { COLORS } from "../styles/Theme";
+import { COLORS } from "../../styles/Theme";
 
 export default function Button({ 
   title = "BUTTON", 

@@ -8,14 +8,14 @@ import * as Animatable from 'react-native-animatable';
 const SplashScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.reset({
-        index: 0,  
-        routes: [{ name: 'loginSelection' }],  
-      });
-    }, 2000);
-  }, [navigation]);
+useEffect(() => {
+  setTimeout(() => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'loginSelection' }], // must match Stack.Screen name exactly
+    });
+  }, 2000);
+}, [navigation]);
 
   // Define custom zoom animation
   const pulse = {

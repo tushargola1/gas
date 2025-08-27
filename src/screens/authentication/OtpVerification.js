@@ -15,7 +15,7 @@ import { COLORS } from "../../styles/Theme";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import OTPTextInput from "react-native-otp-textinput";
 import { StatusBar } from "expo-status-bar";
-import LinearGradientButton from "../../component/LinearGradientButton";
+import LinearGradientButton from "../../component/button/LinearGradientButton";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function OtpVerification({ navigation }) {

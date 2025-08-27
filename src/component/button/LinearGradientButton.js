@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { COLORS } from "../styles/Theme";
+import { COLORS } from "../../styles/Theme";
 
 export default function LinearGradientButton({
   title = "BUTTON",
