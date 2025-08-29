@@ -154,7 +154,7 @@ export default function OtpVerification({ navigation }) {
                   borderWidth: 1,
                   backgroundColor: "#F0F5FA",
                   marginHorizontal: 20, // Reduce spacing between inputs
-                  paddingHorizontal: 0,
+                  paddingHorizontal: 0,height:60
                 }}
                 placeholder="0"
               />
@@ -165,6 +165,10 @@ export default function OtpVerification({ navigation }) {
               onPress={() => navigation.navigate("dashboard")}
               style={{ marginTop: 20 }}
             />
+             <Image
+                                      source={require("../../../assets/Images/cylinder.jpg")}
+                                      style={styles.bannerImage}
+                                    />
           </View>
         </View>
       </Animatable.View>
@@ -244,5 +248,11 @@ const styles = StyleSheet.create({
   forgotPass: {
     color: COLORS.primary,
     fontWeight: "semibold",
+  },
+     bannerImage: {
+    width: "100%",
+    resizeMode: "contain",
+    height: 300,
+    marginTop:40
   },
 });

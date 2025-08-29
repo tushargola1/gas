@@ -45,7 +45,7 @@ const LoginSelection = () => {
           title="Delivery Partner Login"
         onPress={() => navigation.navigate("login", { type: "delivery" })}
           icon={<Feather name="truck" size={24} color={COLORS.white} />}
-          style={{ backgroundColor: COLORS.primary , width: '80%' , alignSelf: 'center'}}
+          style={{ backgroundColor: COLORS.primary , width: 'fit-content' , alignSelf: 'center'}}
         />
       </View>
     </LinearGradient>

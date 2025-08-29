@@ -14,17 +14,30 @@ import AddressScreen from "../screens/Consumer/Address/AddressScreen";
 import NewAddress from "../screens/Consumer/Address/NewAddress";
 import { COLORS } from "../styles/Theme";
 import History from "../screens/Consumer/history/History";
+import DisplayProfile from "../screens/Consumer/Profile/DisplayProfile";
+import NewBooking from "../screens/Consumer/Booking/NewBooking";
 
 const Tab = createBottomTabNavigator();
 const AddressStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator(); // <-- New Profile stack
 
-// Address Stack
+// Address Stack Navigator
 function AddressStackScreen() {
   return (
     <AddressStack.Navigator screenOptions={{ headerShown: false }}>
       <AddressStack.Screen name="AddressMain" component={AddressScreen} />
       <AddressStack.Screen name="newAddress" component={NewAddress} />
     </AddressStack.Navigator>
+  );
+}
+
+// Profile Stack Navigator
+function ProfileStackScreen() {
+  return (
+    <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
+      <ProfileStack.Screen name="ProfileForm" component={ConsumerProfileForm} />
+      <ProfileStack.Screen name="ProfileShow" component={DisplayProfile} />
+    </ProfileStack.Navigator>
   );
 }
 
@@ -64,7 +77,6 @@ const NoRippleTabButton = ({ children, onPress, accessibilityState }) => {
 export default function MainTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="profile"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: COLORS.accent,
@@ -76,12 +88,12 @@ export default function MainTabs() {
             profile: { filled: "person", outline: "person-outline" },
             address: { filled: "location", outline: "location-outline" },
             history: { filled: "time", outline: "time-outline" },
-
-            info: {
-              filled: "information-circle",
-              outline: "information-circle-outline",
+            booking: {
+              filled: "flame",
+              outline: "flame-outline",
             },
           };
+
           const current = iconMap[route.name] || {
             filled: "ellipse",
             outline: "ellipse-outline",
@@ -102,9 +114,10 @@ export default function MainTabs() {
     >
       <Tab.Screen
         name="profile"
-        component={ConsumerProfileForm}
+        component={ProfileStackScreen}
         options={{ title: "Profile" }}
       />
+
       <Tab.Screen
         name="address"
         component={AddressStackScreen}
@@ -116,9 +129,9 @@ export default function MainTabs() {
         options={{ title: "History" }}
       />
       <Tab.Screen
-        name="info"
-        component={ConsumerProfileForm}
-        options={{ title: "Info" }}
+        name="booking"
+        component={NewBooking}
+        options={{ title: "Booking" }}
       />
     </Tab.Navigator>
   );
@@ -130,4 +143,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  // you can add styles for activeTabBackground if you want to style focused tabs
 });

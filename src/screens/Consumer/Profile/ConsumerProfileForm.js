@@ -4,16 +4,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { COLORS, gaps } from "../../../styles/Theme";
 import Form from "./Form";
+import SmallSideButton from "../../../component/button/SmallSideButton";
 
 export default function ConsumerProfileForm({ navigation }) {
   const insets = useSafeAreaInsets();
 
   const handleBackPress = () => {
-    // Navigate to dashboard instead of going back to splash
     navigation.getParent()?.navigate('dashboard');
   };
 
@@ -50,6 +50,7 @@ export default function ConsumerProfileForm({ navigation }) {
         easing="ease-out-cubic"
         style={styles.bottomContainer}
       >
+       
         <KeyboardAwareScrollView
           enableOnAndroid
           extraScrollHeight={Platform.OS === "ios" ? 50 : 80}
@@ -57,6 +58,7 @@ export default function ConsumerProfileForm({ navigation }) {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          
           <Form />
         </KeyboardAwareScrollView>
       </Animatable.View>

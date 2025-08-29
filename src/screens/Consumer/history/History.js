@@ -8,6 +8,7 @@ import {
   Modal,
   SafeAreaView,
   ScrollView,
+  Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
@@ -18,6 +19,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { COLORS, gaps } from "../../../styles/Theme";
 import SmallSideButton from "../../../component/button/SmallSideButton";
+import LinearGradientButton from "../../../component/button/LinearGradientButton";
+import HistoryCard from "../../../component/HistoryCard";
 
 /* ================== MOCK DATA ================== */
 const STATUS_TABS = [
@@ -92,109 +95,115 @@ export default function History({ navigation }) {
       : MOCK_ORDERS.filter((o) => o.status === activeStatus);
   }, [activeStatus]);
 
-  const renderOrder = ({ item }) => {
-    const statusColor = STATUS_COLORS[item.status] || {
-      bg: "#E5E7EB",
-      text: "#374151",
-    };
+  // const renderOrder = ({ item }) => {
+  //   // const statusColor = STATUS_COLORS[item.status] || {
+  //   //   bg: "#E5E7EB",
+  //   //   text: "#374151",
+  //   // };
 
-    return (
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <View
-            style={[styles.statusBadge, { backgroundColor: statusColor.bg }]}
-          >
-            <Text style={[styles.statusText, { color: statusColor.text }]}>
-              {item.status.replace(/_/g, " ").toUpperCase()}
-            </Text>
-          </View>
-          <Text style={styles.orderId}>{item.orderId}</Text>
-        </View>
+  //   return (
+  //     <View style={styles.card}>
+  //       <View style={styles.cardHeader}>
+  //         <View
+  //           style={[styles.statusBadge, { backgroundColor: statusColor.bg }]}
+  //         >
+  //           <Text style={[styles.statusText, { color: statusColor.text }]}>
+  //             {item.status.replace(/_/g, " ").toUpperCase()}
+  //           </Text>
+  //         </View>
+  //         <Text style={styles.orderId}>{item.orderId}</Text>
+  //       </View>
 
-        <Text style={styles.cylinderText}>
-          Cylinder: {item.cylinder} | {item.price.toFixed(2)} {item.quantity}{" "}
-          {item.total}
-        </Text>
+  //       <Text style={styles.cylinderText}>
+  //         Cylinder: {item.cylinder} | {item.price.toFixed(2)} {item.quantity}{" "}
+  //         {item.total}
+  //       </Text>
 
-        <Text style={styles.addressText}>{item.address}</Text>
+  //       <Text style={styles.addressText}>{item.address}</Text>
 
-        <View style={styles.row}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons
-              name="speaker-notes"
-              size={14}
-              color={COLORS.textLight}
-            />
-            <Text style={[styles.noteText, { marginLeft: 5 }]}>
-              {item.bookingNote}
-            </Text>
-          </View>
-          <Text style={styles.dateText}>
-            {new Date(item.deliveryDate).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}{" "}
-            {new Date(item.deliveryDate).toLocaleTimeString("en-IN", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </Text>
-        </View>
+  //       <View style={styles.row}>
+  //         <View style={{ flexDirection: "row", alignItems: "center" }}>
+  //           <MaterialIcons
+  //             name="speaker-notes"
+  //             size={14}
+  //             color={COLORS.textLight}
+  //           />
+  //           <Text style={[styles.noteText, { marginLeft: 5 }]}>
+  //             {item.bookingNote}
+  //           </Text>
+  //         </View>
+  //         <Text style={styles.dateText}>
+  //           {new Date(item.deliveryDate).toLocaleDateString("en-IN", {
+  //             day: "numeric",
+  //             month: "short",
+  //             year: "numeric",
+  //           })}{" "}
+  //           {new Date(item.deliveryDate).toLocaleTimeString("en-IN", {
+  //             hour: "2-digit",
+  //             minute: "2-digit",
+  //           })}
+  //         </Text>
+  //       </View>
 
-        <View style={styles.buttonRow}>
-          <Pressable
-            style={[
-              styles.button,
-              {
-                backgroundColor: COLORS.primary,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              },
-            ]}
-            onPress={() => setSelectedOrder(item)}
-          >
-            <FontAwesome name="eye" size={20} color="white" />
-            <Text style={[styles.buttonText, { marginLeft: 8 }]}>
-              View Details
-            </Text>
-          </Pressable>
+  //       <View style={styles.buttonRow}>
+  //         <Pressable
+  //           style={[
+  //             styles.button,
+  //             {
+  //               backgroundColor: COLORS.primary,
+  //               flexDirection: "row",
+  //               alignItems: "center",
+  //               justifyContent: "center",
+  //             },
+  //           ]}
+  //           onPress={() => setSelectedOrder(item)}
+  //         >
+  //           <FontAwesome name="eye" size={20} color="white" />
+  //           <Text style={[styles.buttonText, { marginLeft: 8 }]}>
+  //             View Details
+  //           </Text>
+  //         </Pressable>
 
-          <Pressable
-            style={[
-              styles.button,
-              {
-                backgroundColor: COLORS.white,
-                borderWidth: 1,
-                borderColor: COLORS.primary,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              },
-            ]}
-            onPress={() => alert("Invoice clicked")}
-          >
-            <FontAwesome name="download" size={20} color={COLORS.primary} />
-            <Text
-              style={[
-                styles.buttonText,
-                {
-                  color: COLORS.primary,
-                  marginLeft: 8,
-                  fontWeight: "700",
-                  fontSize: 15,
-                },
-              ]}
-            >
-              Invoice
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  };
-
+  //         <Pressable
+  //           style={[
+  //             styles.button,
+  //             {
+  //               backgroundColor: COLORS.white,
+  //               borderWidth: 1,
+  //               borderColor: COLORS.primary,
+  //               flexDirection: "row",
+  //               alignItems: "center",
+  //               justifyContent: "center",
+  //             },
+  //           ]}
+  //           onPress={() => alert("Invoice clicked")}
+  //         >
+  //           <FontAwesome name="download" size={20} color={COLORS.primary} />
+  //           <Text
+  //             style={[
+  //               styles.buttonText,
+  //               {
+  //                 color: COLORS.primary,
+  //                 marginLeft: 8,
+  //                 fontWeight: "700",
+  //                 fontSize: 15,
+  //               },
+  //             ]}
+  //           >
+  //             Invoice
+  //           </Text>
+  //         </Pressable>
+  //       </View>
+  //     </View>
+  //   );
+  // };
+  const renderOrder = ({ item }) => (
+    <HistoryCard
+      item={item}
+      onView={setSelectedOrder}
+      onInvoice={() => alert("Invoice clicked")}
+    />
+  );
   return (
     <LinearGradient
       style={{
@@ -235,7 +244,7 @@ export default function History({ navigation }) {
         <View style={{ alignItems: "flex-end", marginTop: 15 }}>
           <SmallSideButton
             title="New Booking"
-            onPress={() => navigation.navigate("newAddress")}
+            onPress={() => navigation.navigate("booking")}
             icon={
               <Ionicons
                 name="add-outline"
@@ -290,8 +299,46 @@ export default function History({ navigation }) {
 
               {/* Show "No Bookings Found" if empty */}
               {filteredOrders.length === 0 && (
-                <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No Bookings Found</Text>
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#fff",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginTop: "20%",
+                  }}
+                >
+                  <Image
+                    source={require("../../../../assets/Images/NoData.png")}
+                    style={{
+                      width: "100%",
+                      height: 300,
+                      resizeMode: "cover",
+                      marginBottom: 16,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      color: "#666",
+                      marginBottom: 20,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    No Bookings Found
+                  </Text>
+                  <LinearGradientButton
+                    title="New Booking"
+                    onPress={() => navigation.navigate("newAddress")}
+                    icon={
+                      <Ionicons
+                        name="add-outline"
+                        size={18}
+                        color="white"
+                        style={{ fontWeight: "700" }}
+                      />
+                    }
+                  />
                 </View>
               )}
             </>
@@ -322,22 +369,23 @@ export default function History({ navigation }) {
             {selectedOrder && (
               <View>
                 {/* Booking Timeline */}
-                {selectedOrder.history.map((h, idx) => {
-                  const color =
-                    STATUS_COLORS[h.status.toLowerCase()]?.text ||
-                    COLORS.textDark;
-                  return (
-                    <View key={idx} style={styles.timelineItem}>
-                      <Text style={[styles.timelineStatus, { color }]}>
-                        {h.status}
-                      </Text>
-                      <Text style={styles.timelineMessage}>{h.message}</Text>
-                      <Text style={styles.timelineUser}>
-                        {h.user} at {h.time}
-                      </Text>
-                    </View>
-                  );
-                })}
+            {selectedOrder.history.map((h, idx) => {
+  const statusKey = h.status.toLowerCase(); // normalize
+  const color = STATUS_COLORS[statusKey]?.text || COLORS.textDark;
+
+  return (
+    <View key={idx} style={styles.timelineItem}>
+      <Text style={[styles.timelineStatus, { color }]}>
+        {h.status}
+      </Text>
+      <Text style={styles.timelineMessage}>{h.message}</Text>
+      <Text style={styles.timelineUser}>
+        {h.user} at {h.time}
+      </Text>
+    </View>
+  );
+})}
+
 
                 {/* Buttons */}
                 <View style={styles.modalButtonRow}>

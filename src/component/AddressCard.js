@@ -9,9 +9,9 @@ const AddressCard = ({ label, address, landmark, pincode, isDefault, onEdit, onD
       <View style={styles.cardHeader}>
         <View style={styles.labelContainer}>
           <Ionicons
-            name={label.toLowerCase() === "home" ? "home-outline" : "business-outline"}
+            name={label === "home" ? "home-outline" : "business-outline"}
             size={18}
-            color={label.toLowerCase() === "home" ? "green" : "blue"}
+            color={label === "home" ? "green" : "blue"}
           />
           <Text style={styles.label}>{label}</Text>
           {isDefault && (

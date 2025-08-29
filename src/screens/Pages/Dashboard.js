@@ -11,13 +11,59 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS, gaps } from "../../styles/Theme";
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Octicons from '@expo/vector-icons/Octicons';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Octicons from "@expo/vector-icons/Octicons";
+import AddressCard from "../../component/AddressCard";
+import HistoryCard from "../../component/HistoryCard"; // ✅ import your history card
+
 export default function Dashboard({ navigation }) {
   const insets = useSafeAreaInsets();
+
+  const MOCK_ORDERS = [
+    {
+      id: "1",
+      orderId: "#00250",
+      status: "out_for_delivery",
+      cylinder: "Commercial 25KG",
+      price: 519.0,
+      quantity: 10,
+      total: 5190,
+      address:
+        "9953612444, SECOND FLOOR, O-267, SECTOR-1, PKT-O, DSIIDC BAWANA, Delhi, Delhi, [110002]",
+      bookingNote: "Sample booking note 249",
+      deliveryDate: "2025-07-22T16:43:00",
+      history: [
+        {
+          status: "Pending",
+          message: "Booking created successfully.",
+          user: "Texmith",
+          time: "1 month ago",
+        },
+        {
+          status: "Confirmed",
+          message: "Your booking has been confirmed.",
+          user: "Mr. Rogers Hoeger V",
+          time: "1 month ago",
+        },
+        {
+          status: "Confirmed",
+          message:
+            "A driver is assigned to your booking and it will be out for delivery soon.",
+          user: "Mr. Rogers Hoeger V",
+          time: "1 month ago",
+        },
+        {
+          status: "Out_for_delivery",
+          message: "Your booking is out for delivery.",
+          user: "Shakira Ryan",
+          time: "1 month ago",
+        },
+      ],
+    },
+  ];
 
   const DashboardCard = ({ icon: IconComponent, name, label, onPress }) => (
     <View style={styles.dashboardContainerParent}>
@@ -49,7 +95,10 @@ export default function Dashboard({ navigation }) {
 
       {/* Top Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.openDrawer()} style={styles.menuButton}>
+        <Pressable
+          onPress={() => navigation.openDrawer()}
+          style={styles.menuButton}
+        >
           <Ionicons name="menu" size={30} color="white" />
         </Pressable>
         <Pressable onPress={() => navigation.navigate("profile")}>
@@ -70,30 +119,64 @@ export default function Dashboard({ navigation }) {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.dashboardContainer}>
             <DashboardCard
-              icon={FontAwesome5}
-              name="book"
+              icon={MaterialCommunityIcons}
+              name="gas-cylinder"
               label="Book Now"
-              onPress={() => console.log("I-Card pressed")}
+              onPress={() =>
+                navigation.navigate("bookingRoot", { screen: "booking" })
+              }
             />
             <DashboardCard
               icon={FontAwesome}
               name="address-book"
               label="Address"
-           onPress={() => navigation.navigate("profile", { screen: "address" })}
+              onPress={() =>
+                navigation.navigate("addressRoot", { screen: "address" })
+              }
             />
             <DashboardCard
               icon={Octicons}
               name="history"
               label="Booking History"
-              onPress={() => console.log("My Photos pressed")}
+              onPress={() =>
+                navigation.navigate("historyRoot", { screen: "history" })
+              }
             />
             <DashboardCard
               icon={FontAwesome}
               name="user"
               label="Profile"
-              onPress={() => navigation.navigate("profile")}
+              onPress={() =>
+                navigation.navigate("profile", {
+                  screen: "profile",
+                  params: {
+                    screen: "ProfileShow",
+                  },
+                })
+              }
             />
           </View>
+
+          {/* ✅ Show last booking card here */}
+       <View style={{ flexDirection:"row" ,  alignItems:"center" , justifyContent:"space-between" , marginBottom:10}}>
+           <Text style={{ fontSize: 18, fontWeight: "700", marginVertical: 10 }}>
+            Recent Bookings
+          </Text>
+          <Pressable onPress={() => navigation.navigate("historyRoot", { screen: "history" })}>
+            <Text style={{ fontWeight:"bold" , color:COLORS.textLight }}>See all </Text>
+          </Pressable>
+       </View>
+          <HistoryCard
+            item={MOCK_ORDERS[0]}
+            onView={(order) => console.log("View", order)}
+            onInvoice={(order) => console.log("Invoice", order)}
+          />
+
+        
+          <Image
+            source={require("../../../assets/Images/homeBanner.jpg")}
+            style={styles.bannerImage}
+          />
         </ScrollView>
       </Animatable.View>
     </LinearGradient>
@@ -127,15 +210,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingHorizontal: gaps.paddingHorizontal,
     marginTop: 10,
-
   },
   dashboardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    paddingVertical: 50,
-    rowGap: 40,
-      alignItems: "center",
+    paddingVertical: 40,
+    rowGap: 30,
+    alignItems: "center",
   },
   dashboardContainerParent: {
     width: "50%",
@@ -144,7 +226,7 @@ const styles = StyleSheet.create({
   dashboardContainerChild: {
     width: 130,
     height: 130,
-    borderRadius: "50%",
+    borderRadius: 65,
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
@@ -158,5 +240,11 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     marginTop: 10,
+  },
+  bannerImage: {
+    width: "100%",
+    resizeMode: "contain",
+    height: 300,
+    marginTop: 20,
   },
 });

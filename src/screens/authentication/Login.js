@@ -133,6 +133,10 @@ export default function Login({ navigation, route }) {
                 {switchText}
               </Text>
             </View>
+              <Image
+                          source={require("../../../assets/Images/cylinder.jpg")}
+                          style={styles.bannerImage}
+                        />
           </View>
         </View>
       </Animatable.View>
@@ -200,5 +204,11 @@ const styles = StyleSheet.create({
   forgotPass: {
     color: COLORS.primary,
     fontWeight: "600",
+  },
+   bannerImage: {
+    width: "100%",
+    resizeMode: "contain",
+    height: 300,
+    marginTop:40
   },
 });

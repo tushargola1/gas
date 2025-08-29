@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Platform,
+  Image,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
 import { StatusBar } from "expo-status-bar";
@@ -11,6 +18,7 @@ import AddressCard from "../../../component/AddressCard";
 import Button from "../../../component/button/Button";
 import SmallSideButton from "../../../component/button/SmallSideButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import LinearGradientButton from "../../../component/button/LinearGradientButton";
 
 export default function AddressScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -99,7 +107,7 @@ export default function AddressScreen({ navigation }) {
         >
           <View style={{ flex: 1, alignItems: "flex-end", marginBottom: 16 }}>
             <SmallSideButton
-              title="New Address"
+              title="Add Address"
               onPress={() => navigation.navigate("newAddress")}
               icon={
                 <MaterialIcons
@@ -111,19 +119,56 @@ export default function AddressScreen({ navigation }) {
               }
             />
           </View>
-          {addresses.map((item) => (
-            <AddressCard
-              key={item.id}
-              label={item.label}
-              address={item.address}
-              landmark={item.landmark}
-              pincode={item.pincode}
-              isDefault={item.isDefault}
-              onEdit={() => console.log("Edit", item.id)}
-              onDelete={() => console.log("Delete", item.id)}
-              onSetDefault={() => console.log("Set Default", item.id)}
-            />
-          ))}
+          {addresses.length === 0 ? (
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "#fff",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "30%",
+              }}
+            >
+              <Image
+                source={require("../../../../assets/Images/noAddress.png")}
+                style={{
+                  width: "100%",
+                  height: 300,
+                  resizeMode: "cover",
+                  marginBottom: 16,
+                }}
+              />
+              <Text style={{ fontSize: 20, color: "#666", marginBottom: 20 , fontWeight:"bold" }}>
+                No addresses found
+              </Text>
+              <LinearGradientButton
+                title="Add Address"
+                onPress={() => navigation.navigate("newAddress")}
+                icon={
+                  <MaterialIcons
+                    name="add-location-alt"
+                    size={18}
+                    color="white"
+                    style={{ fontWeight: "700" }}
+                  />
+                }
+              />
+            </View>
+          ) : (
+            addresses.map((item) => (
+              <AddressCard
+                key={item.id}
+                label={item.label}
+                address={item.address}
+                landmark={item.landmark}
+                pincode={item.pincode}
+                isDefault={item.isDefault}
+                onEdit={() => navigation.navigate('newAddress')}
+                onDelete={() => console.log("Delete", item.id)}
+                onSetDefault={() => console.log("Set Default", item.id)}
+              />
+            ))
+          )}
         </ScrollView>
       </Animatable.View>
     </LinearGradient>
