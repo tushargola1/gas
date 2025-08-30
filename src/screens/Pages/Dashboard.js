@@ -18,8 +18,9 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Octicons from "@expo/vector-icons/Octicons";
 import AddressCard from "../../component/AddressCard";
 import HistoryCard from "../../component/HistoryCard"; // ✅ import your history card
+import { useUserType } from "../../hooks/UserTypeContext";
 
-export default function Dashboard({ navigation }) {
+export default function Dashboard({ navigation, route }) {
   const insets = useSafeAreaInsets();
 
   const MOCK_ORDERS = [
@@ -77,7 +78,9 @@ export default function Dashboard({ navigation }) {
       <Text style={styles.cardText}>{label}</Text>
     </View>
   );
+  const { type } = useUserType();
 
+  const consumer = type === "consumer";
   return (
     <LinearGradient
       style={{
@@ -118,22 +121,40 @@ export default function Dashboard({ navigation }) {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.dashboardContainer}>
-            <DashboardCard
-              icon={MaterialCommunityIcons}
-              name="gas-cylinder"
-              label="Book Now"
-              onPress={() =>
-                navigation.navigate("bookingRoot", { screen: "booking" })
-              }
-            />
-            <DashboardCard
-              icon={FontAwesome}
-              name="address-book"
-              label="Address"
-              onPress={() =>
-                navigation.navigate("addressRoot", { screen: "address" })
-              }
-            />
+            {consumer ? (
+              <>
+                <DashboardCard
+                  icon={MaterialCommunityIcons}
+                  name="gas-cylinder"
+                  label="Book Now"
+                  onPress={() =>
+                    navigation.navigate("bookingRoot", { screen: "booking" })
+                  }
+                />
+                <DashboardCard
+                  icon={FontAwesome}
+                  name="address-book"
+                  label="Address"
+                  onPress={() =>
+                    navigation.navigate("addressRoot", { screen: "address" })
+                  }
+                />
+              </>
+            ) : (
+              <>
+                <DashboardCard
+                  icon={MaterialCommunityIcons}
+                  name="truck-delivery"
+                  label="Upcoming Delivery"
+                  onPress={() =>
+                    navigation.navigate("upcomingDeliveryRoot", {
+                      screen: "upcomingDelivery",
+                    })
+                  }
+                />
+              </>
+            )}
+
             <DashboardCard
               icon={Octicons}
               name="history"
@@ -158,21 +179,49 @@ export default function Dashboard({ navigation }) {
           </View>
 
           {/* ✅ Show last booking card here */}
-       <View style={{ flexDirection:"row" ,  alignItems:"center" , justifyContent:"space-between" , marginBottom:10}}>
-           <Text style={{ fontSize: 18, fontWeight: "700", marginVertical: 10 }}>
-            Recent Bookings
-          </Text>
-          <Pressable onPress={() => navigation.navigate("historyRoot", { screen: "history" })}>
-            <Text style={{ fontWeight:"bold" , color:COLORS.textLight }}>See all </Text>
-          </Pressable>
-       </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 10,
+            }}
+          >
+            <Text
+              style={{ fontSize: 18, fontWeight: "700", marginVertical: 10 }}
+            >
+              {consumer ? "Recent Bookings" : "Upcoming Bookings"}
+            </Text>
+            {consumer ? (
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("historyRoot", { screen: "history" })
+                }
+              >
+                <Text style={{ fontWeight: "bold", color: COLORS.textLight }}>
+                  See all{" "}
+                </Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("upcomingDeliveryRoot", {
+                    screen: "upcomingDelivery",
+                  })
+                }
+              >
+                <Text style={{ fontWeight: "bold", color: COLORS.textLight }}>
+                  See all{" "}
+                </Text>
+              </Pressable>
+            )}
+          </View>
           <HistoryCard
             item={MOCK_ORDERS[0]}
             onView={(order) => console.log("View", order)}
             onInvoice={(order) => console.log("Invoice", order)}
           />
 
-        
           <Image
             source={require("../../../assets/Images/homeBanner.jpg")}
             style={styles.bannerImage}
@@ -245,6 +294,6 @@ const styles = StyleSheet.create({
     width: "100%",
     resizeMode: "contain",
     height: 300,
-    marginTop: 20,
+    marginVertical: 20,
   },
 });

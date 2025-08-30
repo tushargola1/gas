@@ -16,6 +16,8 @@ import { COLORS } from "../styles/Theme";
 import History from "../screens/Consumer/history/History";
 import DisplayProfile from "../screens/Consumer/Profile/DisplayProfile";
 import NewBooking from "../screens/Consumer/Booking/NewBooking";
+import UpcomingDelivery from "../screens/delivery/UpcomingDelivery";
+import { useUserType } from "../hooks/UserTypeContext";
 
 const Tab = createBottomTabNavigator();
 const AddressStack = createNativeStackNavigator();
@@ -75,6 +77,8 @@ const NoRippleTabButton = ({ children, onPress, accessibilityState }) => {
 };
 
 export default function MainTabs() {
+  const { type } = useUserType();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -89,6 +93,10 @@ export default function MainTabs() {
             address: { filled: "location", outline: "location-outline" },
             history: { filled: "time", outline: "time-outline" },
             booking: {
+              filled: "flame",
+              outline: "flame-outline",
+            },
+            upcomingDelivery: {
               filled: "flame",
               outline: "flame-outline",
             },
@@ -117,22 +125,32 @@ export default function MainTabs() {
         component={ProfileStackScreen}
         options={{ title: "Profile" }}
       />
-
+      {type === "consumer" ? <>
       <Tab.Screen
         name="address"
         component={AddressStackScreen}
         options={{ title: "Address" }}
       />
+         <Tab.Screen
+        name="booking"
+        component={NewBooking}
+        options={{ title: "Booking" }}
+      />
+      </> : <>
+         <Tab.Screen
+        name="upcomingDelivery"
+        component={UpcomingDelivery}
+        options={{ title: "Upcoming Delivery" }}
+      />
+      </>}
+      
       <Tab.Screen
         name="history"
         component={History}
         options={{ title: "History" }}
       />
-      <Tab.Screen
-        name="booking"
-        component={NewBooking}
-        options={{ title: "Booking" }}
-      />
+   
+   
     </Tab.Navigator>
   );
 }

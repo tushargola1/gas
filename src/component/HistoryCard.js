@@ -14,7 +14,7 @@ const STATUS_COLORS = {
   completed: { bg: "#DBEAFE", text: "#1D4ED8" },
 };
 
-export default function HistoryCard({ item, onView, onInvoice }) {
+export default function HistoryCard({ item, onView, onInvoice, type }) {
   const route = useRoute(); // ✅ get current route
   const statusColor = STATUS_COLORS[item.status] || {
     bg: "#E5E7EB",
@@ -35,8 +35,8 @@ export default function HistoryCard({ item, onView, onInvoice }) {
 
       {/* Cylinder Info */}
       <Text style={styles.cylinderText}>
-        Cylinder: {item.cylinder} | ₹{item.price.toFixed(2)} × {item.quantity} = ₹
-        {item.total}
+        Cylinder: {item.cylinder} | ₹{item.price.toFixed(2)} × {item.quantity} =
+        ₹{item.total}
       </Text>
 
       {/* Address */}
@@ -45,7 +45,11 @@ export default function HistoryCard({ item, onView, onInvoice }) {
       {/* Note + Date */}
       <View style={styles.row}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons name="speaker-notes" size={14} color={COLORS.textLight} />
+          <MaterialIcons
+            name="speaker-notes"
+            size={14}
+            color={COLORS.textLight}
+          />
           <Text style={[styles.noteText, { marginLeft: 5 }]}>
             {item.bookingNote}
           </Text>
@@ -71,16 +75,30 @@ export default function HistoryCard({ item, onView, onInvoice }) {
             onPress={() => onView(item)}
           >
             <FontAwesome name="eye" size={20} color="white" />
-            <Text style={[styles.buttonText, { marginLeft: 8 , color:COLORS.white }]}>View Details</Text>
+            <Text
+              style={[
+                styles.buttonText,
+                { marginLeft: 8, color: COLORS.white },
+              ]}
+            >
+              View Details
+            </Text>
           </Pressable>
-
-          <Pressable
-            style={[styles.button, styles.invoiceBtn]}
-            onPress={() => onInvoice(item)}
-          >
-            <FontAwesome name="download" size={20} color={COLORS.primary} />
-            <Text style={[styles.buttonText, styles.invoiceText]}>Invoice</Text>
-          </Pressable>
+          {type === "consumer" ? (
+            <>
+              <Pressable
+                style={[styles.button, styles.invoiceBtn]}
+                onPress={() => onInvoice(item)}
+              >
+                <FontAwesome name="download" size={20} color={COLORS.primary} />
+                <Text style={[styles.buttonText, styles.invoiceText]}>
+                  Invoice
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <></>
+          )}
         </View>
       )}
     </View>
@@ -136,5 +154,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.primary,
   },
-  invoiceText: { color: COLORS.primary, fontWeight: "700", fontSize: 15 },
+  invoiceText: {
+    color: COLORS.primary,
+    fontWeight: "700",
+    fontSize: 15,
+    marginLeft: 8,
+  },
 });

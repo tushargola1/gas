@@ -1,38 +1,20 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import * as ImagePicker from "expo-image-picker";
+import { useUserType } from "../../../hooks/UserTypeContext";
 import { COLORS } from "../../../styles/Theme";
-import LinearGradientButton from "../../../component/button/LinearGradientButton";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FormInput from "../../../component/FormInput";
+import LinearGradientButton from "../../../component/button/LinearGradientButton";
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  firmName: Yup.string().required("Firm Name is required"),
-  number: Yup.string()
-    .matches(/^[0-9]{10}$/, "Enter a valid 10-digit number")
-    .required("Phone number is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  permanentAddress: Yup.string().required("Permanent address is required"),
-  addressLine1: Yup.string().required("Address Line 1 is required"),
-  addressLine2: Yup.string().required("Address Line 2 is required"),
-  city: Yup.string().required("City is required"),
-  state: Yup.string().required("State is required"),
-  pincode: Yup.string()
-    .matches(/^[0-9]{6}$/, "Enter a valid 6-digit pincode")
-    .required("Pincode is required"),
-  gst: Yup.string().required("GST number is required"),
-  aadhar: Yup.string()
-    .matches(/^[0-9]{12}$/, "Aadhar must be 12 digits")
-    .required("Aadhar is required"),
-});
-
-export default function Form() {
+export default function ProfileForm() {
+  const { type } = useUserType(); // "consumer" or "delivery"
   const [image, setImage] = useState(null);
+  const [sameAsTemp, setSameAsTemp] = useState(false);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
@@ -57,19 +39,39 @@ export default function Form() {
       pincode: "",
       gst: "",
       aadhar: "",
+      temp_addressLine1: "",
+      temp_addressLine2: "",
+      temp_city: "",
+      temp_state: "",
+      temp_pincode: "",
     },
-    validationSchema,
-    validateOnChange: false, // validation only on submit
-    validateOnBlur: false,
     onSubmit: (values) => {
-      console.log("Form Data: ", values);
-      alert("Profile Updated!");
+      alert("Profile Updated Successfully");
     },
+    validateOnChange: false,
+    validateOnBlur: false,
   });
+
+  useEffect(() => {
+    if (sameAsTemp) {
+      formik.setFieldValue("addressLine1", formik.values.temp_addressLine1);
+      formik.setFieldValue("addressLine2", formik.values.temp_addressLine2);
+      formik.setFieldValue("city", formik.values.temp_city);
+      formik.setFieldValue("state", formik.values.temp_state);
+      formik.setFieldValue("pincode", formik.values.temp_pincode);
+    }
+  }, [
+    sameAsTemp,
+    formik.values.temp_addressLine1,
+    formik.values.temp_addressLine2,
+    formik.values.temp_city,
+    formik.values.temp_state,
+    formik.values.temp_pincode,
+  ]);
 
   return (
     <View style={{ marginVertical: 20 }}>
-      {/* Profile Image Picker */}
+      {/* Profile Image */}
       <TouchableOpacity
         onPress={pickImage}
         style={{ alignSelf: "center", marginBottom: 20 }}
@@ -77,124 +79,191 @@ export default function Form() {
         {image ? (
           <Image source={{ uri: image }} style={styles.profileImage} />
         ) : (
-          <View
-            style={{
-              width: 150,
-              height: 150,
-              borderRadius: 20,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: COLORS.backgroundLight,
-            }}
-          >
+          <View style={styles.placeholderImage}>
             <Text style={{ color: COLORS.textLight }}>+ Add Photo</Text>
           </View>
         )}
       </TouchableOpacity>
 
+      {/* Common Fields */}
       <FormInput
-        label="Name"
-        placeholder="Enter your full name"
+        label="Full Name"
+        placeholder="Enter full name"
         value={formik.values.name}
         onChangeText={formik.handleChange("name")}
-        error={formik.errors.name}
       />
-
       <FormInput
-        label="Firm Name"
-        placeholder="Enter your company/firm name"
-        value={formik.values.firmName}
-        onChangeText={formik.handleChange("firmName")}
-        error={formik.errors.firmName}
-      />
-
-      <FormInput
-        label="Number"
-        placeholder="Enter your phone number"
+        label="Phone Number"
+        placeholder="Enter phone number"
         keyboardType="phone-pad"
         value={formik.values.number}
         onChangeText={formik.handleChange("number")}
-        error={formik.errors.number}
       />
-
       <FormInput
         label="Email"
-        placeholder="Enter your email address"
+        placeholder="Enter email"
         keyboardType="email-address"
         value={formik.values.email}
         onChangeText={formik.handleChange("email")}
-        error={formik.errors.email}
       />
 
-      <FormInput
-        label="Permanent Address"
-        placeholder="Enter your permanent address"
-        value={formik.values.permanentAddress}
-        onChangeText={formik.handleChange("permanentAddress")}
-        error={formik.errors.permanentAddress}
-      />
+      {/* Consumer-only fields */}
+      {type === "consumer" && (
+        <>
+          <FormInput
+            label="Firm Name"
+            placeholder="Enter firm name"
+            value={formik.values.firmName}
+            onChangeText={formik.handleChange("firmName")}
+          />
+          <FormInput
+            label="Permanent Address"
+            placeholder="Enter permanent address"
+            value={formik.values.permanentAddress}
+            onChangeText={formik.handleChange("permanentAddress")}
+          />
+          <FormInput
+            label="Address Line 1"
+            placeholder="Street / House No."
+            value={formik.values.addressLine1}
+            onChangeText={formik.handleChange("addressLine1")}
+          />
+          <FormInput
+            label="Address Line 2"
+            placeholder="Floor / Landmark"
+            value={formik.values.addressLine2}
+            onChangeText={formik.handleChange("addressLine2")}
+          />
+          <FormInput
+            label="City"
+            placeholder="Enter city"
+            value={formik.values.city}
+            onChangeText={formik.handleChange("city")}
+          />
+          <FormInput
+            label="State"
+            placeholder="Enter state"
+            value={formik.values.state}
+            onChangeText={formik.handleChange("state")}
+          />
+          <FormInput
+            label="Pincode"
+            placeholder="Enter pincode"
+            keyboardType="numeric"
+            value={formik.values.pincode}
+            onChangeText={formik.handleChange("pincode")}
+          />
+          <FormInput
+            label="GST Number"
+            placeholder="Enter GST number"
+            value={formik.values.gst}
+            onChangeText={formik.handleChange("gst")}
+          />
+          <FormInput
+            label="Aadhar Number"
+            placeholder="Enter Aadhar number"
+            keyboardType="numeric"
+            value={formik.values.aadhar}
+            onChangeText={formik.handleChange("aadhar")}
+          />
+        </>
+      )}
 
-      <FormInput
-        label="Address Line 1"
-        placeholder="Enter street, house no., etc."
-        value={formik.values.addressLine1}
-        onChangeText={formik.handleChange("addressLine1")}
-        error={formik.errors.addressLine1}
-      />
+      {/* Delivery-only fields */}
+    {type === "delivery" && (
+  <>
+    <Text style={styles.sectionTitle}>Temporary Address</Text>
 
-      <FormInput
-        label="Address Line 2"
-        placeholder="Enter apartment, floor, landmark, etc."
-        value={formik.values.addressLine2}
-        onChangeText={formik.handleChange("addressLine2")}
-        error={formik.errors.addressLine2}
-      />
+    <FormInput
+      label="Address Line 1"
+      placeholder="Street / House No."
+      value={formik.values.temp_addressLine1}
+      onChangeText={formik.handleChange("temp_addressLine1")}
+    />
+    <FormInput
+      label="Address Line 2"
+      placeholder="Floor / Landmark"
+      value={formik.values.temp_addressLine2}
+      onChangeText={formik.handleChange("temp_addressLine2")}
+    />
+    <FormInput
+      label="City"
+      placeholder="Enter city"
+      value={formik.values.temp_city}
+      onChangeText={formik.handleChange("temp_city")}
+    />
+    <FormInput
+      label="State"
+      placeholder="Enter state"
+      value={formik.values.temp_state}
+      onChangeText={formik.handleChange("temp_state")}
+    />
+    <FormInput
+      label="Pincode"
+      placeholder="Enter 6-digit pincode"
+      keyboardType="numeric"
+      value={formik.values.temp_pincode}
+      onChangeText={formik.handleChange("temp_pincode")}
+    />
 
-      <FormInput
-        label="City"
-        placeholder="Enter your city"
-        value={formik.values.city}
-        onChangeText={formik.handleChange("city")}
-        error={formik.errors.city}
+    {/* Checkbox for "Same as Temporary" */}
+    <Pressable
+      onPress={() => setSameAsTemp((prev) => !prev)}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 15,
+        marginBottom: 10,
+      }}
+    >
+      <MaterialCommunityIcons
+        name={sameAsTemp ? "checkbox-marked" : "checkbox-blank-outline"}
+        size={22}
+        color={sameAsTemp ? COLORS.primary : "#9ca3af"}
       />
+      <Text style={{ marginLeft: 10 }}>Same as Temporary Address</Text>
+    </Pressable>
 
-      <FormInput
-        label="State"
-        placeholder="Enter your state"
-        value={formik.values.state}
-        onChangeText={formik.handleChange("state")}
-        error={formik.errors.state}
-      />
+    <Text style={styles.sectionTitle}>Permanent Address</Text>
+    <FormInput
+      label="Address Line 1"
+      placeholder="Street / House No."
+      value={formik.values.addressLine1}
+      onChangeText={formik.handleChange("addressLine1")}
+    />
+    <FormInput
+      label="Address Line 2"
+      placeholder="Floor / Landmark"
+      value={formik.values.addressLine2}
+      onChangeText={formik.handleChange("addressLine2")}
+    />
+    <FormInput
+      label="City"
+      placeholder="Enter city"
+      value={formik.values.city}
+      onChangeText={formik.handleChange("city")}
+    />
+    <FormInput
+      label="State"
+      placeholder="Enter state"
+      value={formik.values.state}
+      onChangeText={formik.handleChange("state")}
+    />
+    <FormInput
+      label="Pincode"
+      placeholder="Enter 6-digit pincode"
+      keyboardType="numeric"
+      value={formik.values.pincode}
+      onChangeText={formik.handleChange("pincode")}
+    />
+  </>
+)}
 
-      <FormInput
-        label="Pincode"
-        placeholder="Enter 6-digit pincode"
-        keyboardType="numeric"
-        value={formik.values.pincode}
-        onChangeText={formik.handleChange("pincode")}
-        error={formik.errors.pincode}
-      />
-
-      <FormInput
-        label="GST Number"
-        placeholder="Enter your GST number"
-        value={formik.values.gst}
-        onChangeText={formik.handleChange("gst")}
-        error={formik.errors.gst}
-      />
-
-      <FormInput
-        label="Aadhar Number"
-        placeholder="Enter your Aadhar number"
-        keyboardType="numeric"
-        value={formik.values.aadhar}
-        onChangeText={formik.handleChange("aadhar")}
-        error={formik.errors.aadhar}
-      />
 
       <LinearGradientButton
-        onPress={formik.handleSubmit}
         title="Update Profile"
+        onPress={formik.handleSubmit}
+        style={{ marginTop: 20 }}
       />
     </View>
   );
@@ -205,5 +274,19 @@ const styles = {
     width: 150,
     height: 150,
     borderRadius: 20,
+  },
+  placeholderImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 20,
+    backgroundColor: COLORS.backgroundLight,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginTop: 20,
+    marginBottom: 10,
   },
 };

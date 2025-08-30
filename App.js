@@ -1,10 +1,13 @@
 import { NavigationContainer } from "@react-navigation/native";
 import DrawerNavigator from "./src/navigation/DrawerNavigator";
+import { UserTypeProvider } from "./src/hooks/UserTypeContext";
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <DrawerNavigator />
-    </NavigationContainer>
+    <UserTypeProvider>
+      <NavigationContainer>
+        <DrawerNavigator />
+      </NavigationContainer>
+    </UserTypeProvider>
   );
 }

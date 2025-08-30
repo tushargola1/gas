@@ -17,12 +17,15 @@ import OTPTextInput from "react-native-otp-textinput";
 import { StatusBar } from "expo-status-bar";
 import LinearGradientButton from "../../component/button/LinearGradientButton";
 import { LinearGradient } from "expo-linear-gradient";
+import { useUserType } from "../../hooks/UserTypeContext";
 
-export default function OtpVerification({ navigation }) {
+export default function OtpVerification({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const [code, setCode] = useState("");
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
+  const { type } = useUserType(); 
+
 
   // Countdown timer logic
   useEffect(() => {
@@ -154,7 +157,8 @@ export default function OtpVerification({ navigation }) {
                   borderWidth: 1,
                   backgroundColor: "#F0F5FA",
                   marginHorizontal: 20, // Reduce spacing between inputs
-                  paddingHorizontal: 0,height:60
+                  paddingHorizontal: 0,
+                  height: 60,
                 }}
                 placeholder="0"
               />
@@ -162,13 +166,13 @@ export default function OtpVerification({ navigation }) {
 
             <LinearGradientButton
               title="Login"
-              onPress={() => navigation.navigate("dashboard")}
+             onPress={() => navigation.navigate("dashboard")}
               style={{ marginTop: 20 }}
             />
-             <Image
-                                      source={require("../../../assets/Images/cylinder.jpg")}
-                                      style={styles.bannerImage}
-                                    />
+            <Image
+              source={require("../../../assets/Images/cylinder.jpg")}
+              style={styles.bannerImage}
+            />
           </View>
         </View>
       </Animatable.View>
@@ -249,10 +253,10 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: "semibold",
   },
-     bannerImage: {
+  bannerImage: {
     width: "100%",
     resizeMode: "contain",
     height: 300,
-    marginTop:40
+    marginTop: 40,
   },
 });

@@ -53,7 +53,6 @@ export default function NewAddress({ navigation }) {
     validateOnChange: false, // validation only on submit
     validateOnBlur: false,
     onSubmit: (values) => {
-      console.log("New Address Data:", values);
       alert("Address Submitted!");
     },
   });

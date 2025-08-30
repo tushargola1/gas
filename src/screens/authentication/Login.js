@@ -14,10 +14,12 @@ import { StatusBar } from "expo-status-bar";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import LinearGradientButton from "../../component/button/LinearGradientButton";
 import { LinearGradient } from "expo-linear-gradient";
+import { useUserType } from "../../hooks/UserTypeContext";
 
 export default function Login({ navigation, route }) {
   const insets = useSafeAreaInsets();
-  const loginType = route.params?.type || "consumer"; 
+const { type, setType } = useUserType();
+
   const otpNumber = "123456"; 
   const [phone, setPhone] = useState("");
   const pulse = {
@@ -27,17 +29,18 @@ export default function Login({ navigation, route }) {
   };
 
   const heading =
-    loginType === "consumer" ? "Consumer Login" : "Delivery Partner Login";
+    type === "consumer" ? "Consumer Login" : "Delivery Partner Login";
+
   const switchText =
-    loginType === "consumer"
+    type === "consumer"
       ? "Or login as Delivery Partner"
       : "Or login as Consumer";
 
-  const switchType = () => {
-    const newType = loginType === "consumer" ? "delivery" : "consumer";
-    setPhone("");
-    navigation.navigate("login", { type: newType });
-  };
+const switchType = () => {
+  const newType = type === "consumer" ? "delivery" : "consumer";
+  setPhone("");
+  setType(newType);
+};
 
   return (
     <LinearGradient
@@ -118,7 +121,7 @@ export default function Login({ navigation, route }) {
 
             <LinearGradientButton
               title="Send OTP"
-              onPress={() => navigation.navigate("otp", { otp: otpNumber })}
+             onPress={() => navigation.navigate("otp", { otp: otpNumber })}
               style={{ marginVertical: 20 }}
             />
 

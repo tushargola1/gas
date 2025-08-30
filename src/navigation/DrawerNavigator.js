@@ -11,12 +11,15 @@ import OtpVerification from "../screens/authentication/OtpVerification";
 import { COLORS } from "../styles/Theme";
 import { View, Text, Image, Pressable, StyleSheet, Alert } from "react-native";
 import MainTabs from "./BottomTabs";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useUserType } from "../hooks/UserTypeContext";
 const Drawer = createDrawerNavigator();
 
 // Custom Drawer Content
 function CustomDrawerContent({ navigation, state }) {
   const currentRoute = state.routes[state.index].name;
+  const { type } = useUserType();
+  const consumer = type === "consumer";
 
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -62,7 +65,12 @@ function CustomDrawerContent({ navigation, state }) {
           ]}
           onPress={() => navigation.navigate("dashboard")}
         >
-          <Ionicons name="home-outline" size={20} color="#4B5563" style={styles.icon} />
+          <Ionicons
+            name="home-outline"
+            size={20}
+            color="#4B5563"
+            style={styles.icon}
+          />
           <Text
             style={[
               styles.menuText,
@@ -85,7 +93,12 @@ function CustomDrawerContent({ navigation, state }) {
             })
           }
         >
-          <Ionicons name="person-outline" size={20} color="#4B5563" style={styles.icon} />
+          <Ionicons
+            name="person-outline"
+            size={20}
+            color="#4B5563"
+            style={styles.icon}
+          />
           <Text
             style={[
               styles.menuText,
@@ -96,45 +109,86 @@ function CustomDrawerContent({ navigation, state }) {
           </Text>
         </Pressable>
 
-        <Pressable
-          style={[
-            styles.menuItem,
-            currentRoute === "addressRoot" && styles.menuActive,
-          ]}
-          onPress={() =>
-            navigation.navigate("addressRoot", { screen: "address" })
-          }
-        >
-          <Ionicons name="location-outline" size={20} color="#4B5563" style={styles.icon} />
-          <Text
-            style={[
-              styles.menuText,
-              currentRoute === "addressRoot" && styles.menuTextActive,
-            ]}
-          >
-            Address
-          </Text>
-        </Pressable>
+        {consumer ? (
+          <>
+            <Pressable
+              style={[
+                styles.menuItem,
+                currentRoute === "addressRoot" && styles.menuActive,
+              ]}
+              onPress={() =>
+                navigation.navigate("addressRoot", { screen: "address" })
+              }
+            >
+              <Ionicons
+                name="location-outline"
+                size={20}
+                color="#4B5563"
+                style={styles.icon}
+              />
+              <Text
+                style={[
+                  styles.menuText,
+                  currentRoute === "addressRoot" && styles.menuTextActive,
+                ]}
+              >
+                Address
+              </Text>
+            </Pressable>
 
-        <Pressable
-          style={[
-            styles.menuItem,
-            currentRoute === "bookingRoot" && styles.menuActive,
-          ]}
-          onPress={() =>
-            navigation.navigate("bookingRoot", { screen: "booking" })
-          }
-        >
-          <MaterialIcons name="book-online" size={20} color="#4B5563" style={styles.icon} />
-          <Text
-            style={[
-              styles.menuText,
-              currentRoute === "bookingRoot" && styles.menuTextActive,
-            ]}
-          >
-            Booking
-          </Text>
-        </Pressable>
+            <Pressable
+              style={[
+                styles.menuItem,
+                currentRoute === "bookingRoot" && styles.menuActive,
+              ]}
+              onPress={() =>
+                navigation.navigate("bookingRoot", { screen: "booking" })
+              }
+            >
+              <MaterialIcons
+                name="book-online"
+                size={20}
+                color="#4B5563"
+                style={styles.icon}
+              />
+              <Text
+                style={[
+                  styles.menuText,
+                  currentRoute === "bookingRoot" && styles.menuTextActive,
+                ]}
+              >
+                Booking
+              </Text>
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <Pressable
+              style={[
+                styles.menuItem,
+                currentRoute === "upcomingDeliveryRoot" && styles.menuActive,
+              ]}
+              onPress={() =>
+                navigation.navigate("upcomingDeliveryRoot", { screen: "upcomingDelivery" })
+              }
+            >
+              <MaterialCommunityIcons
+                name="truck-delivery"
+                size={20}
+                color="#4B5563"
+                style={styles.icon}
+              />
+              <Text
+                style={[
+                  styles.menuText,
+                  currentRoute === "upcomingDeliveryRoot" && styles.menuTextActive,
+                ]}
+              >
+             Upcoming Delivery
+              </Text>
+            </Pressable>
+          </>
+        )}
 
         <Pressable
           style={[
@@ -145,30 +199,38 @@ function CustomDrawerContent({ navigation, state }) {
             navigation.navigate("historyRoot", { screen: "history" })
           }
         >
-          <FontAwesome5 name="history" size={18} color="#4B5563" style={styles.icon} />
+          <FontAwesome5
+            name="history"
+            size={18}
+            color="#4B5563"
+            style={styles.icon}
+          />
           <Text
             style={[
               styles.menuText,
               currentRoute === "historyRoot" && styles.menuTextActive,
             ]}
           >
-            History
+            Booking History
           </Text>
         </Pressable>
       </View>
 
       {/* Logout Button at Bottom */}
-   <View style={styles.logoutContainer}>
-  <Pressable style={styles.menuItem} onPress={handleLogout}>
-    <Ionicons name="log-out-outline" size={20} color="#4B5563" style={styles.icon} />
-    <Text style={styles.menuText}>Logout</Text>
-  </Pressable>
-</View>
-
+      <View style={styles.logoutContainer}>
+        <Pressable style={[styles.menuItem , {marginTop:10 , marginBottom:0}]} onPress={handleLogout}>
+          <Ionicons
+            name="log-out-outline"
+            size={20}
+            color="#4B5563"
+            style={styles.icon}
+          />
+          <Text style={styles.menuText}>Logout</Text>
+        </Pressable>
+      </View>
     </DrawerContentScrollView>
   );
 }
-
 
 export default function DrawerNavigator() {
   return (
@@ -226,6 +288,11 @@ export default function DrawerNavigator() {
         component={MainTabs}
         options={{ headerShown: false }}
       />
+      <Drawer.Screen
+        name="upcomingDeliveryRoot"
+        component={MainTabs}
+        options={{ headerShown: false }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -256,24 +323,23 @@ const styles = StyleSheet.create({
   menuText: { fontSize: 16 },
   menuActive: { backgroundColor: COLORS.secondary },
   menuTextActive: { color: COLORS.white, fontWeight: "bold" },
-   logoutContainer: {
+  logoutContainer: {
     marginTop: "auto",
-    padding: 15,
+    padding: 10,
     borderTopWidth: 1,
     borderColor: "#E5E7EB",
   },
-  icon:{
-    marginRight:20
+  icon: {
+    marginRight: 20,
   },
   logoutBtn: {
-  flexDirection: "row",
-  alignItems: "center",
-},
-logoutText: {
-  color: "red",
-  fontSize: 15,
-  fontWeight: "bold",
-  marginLeft: 10,
-},
-
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  logoutText: {
+    color: "red",
+    fontSize: 15,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
 });

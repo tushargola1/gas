@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  TextInput,
   ScrollView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,44 +13,71 @@ import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import { COLORS, gaps } from "../../../styles/Theme";
 import SmallSideButton from "../../../component/button/SmallSideButton";
+import { useUserType } from "../../../hooks/UserTypeContext";
 
 export default function DisplayProfile({ navigation }) {
   const insets = useSafeAreaInsets();
+  const { type } = useUserType();
 
   const handleBackPress = () => {
     navigation.getParent()?.navigate("dashboard");
   };
 
-const profile = {
-  name: "Rajesh Kumar",
-  firmName: "Kumar Enterprises",
-  number: "9876543210",
-  email: "rajesh@kumarenterprises.com",
-  permanentAddress: "456 Gandhi Nagar, Chennai, Tamil Nadu",
-  addressLine1: "123 MG Road",
-  addressLine2: "Near Metro Station",
-  city: "Bangalore",
-  state: "Karnataka",
-  pincode: "560001",
-  gst: "29ABCDE1234F1Z5",
-  aadhar: "123456789012",
-};
+  // Temporary mock data — replace with real data
+  const profile = {
+    name: "Rajesh Kumar",
+    firmName: "Kumar Enterprises",
+    number: "9876543210",
+    email: "rajesh@kumarenterprises.com",
 
-const profileFields = [
-  { key: "name", label: "Full Name", icon: "user" },
-  { key: "firmName", label: "Firm Name", icon: "briefcase" },
-  { key: "number", label: "Mobile Number", icon: "phone" },
-  { key: "email", label: "Email Address", icon: "mail" },
-  { key: "permanentAddress", label: "Permanent Address", icon: "home" },
-  { key: "addressLine1", label: "Address Line 1", icon: "map-pin" },
-  { key: "addressLine2", label: "Address Line 2", icon: "map" },
-  { key: "city", label: "City", icon: "building" },
-  { key: "state", label: "State", icon: "globe" },
-  { key: "pincode", label: "Pincode", icon: "hash" },
-  { key: "gst", label: "GST Number", icon: "credit-card" },
-  { key: "aadhar", label: "Aadhar Number", icon: "file-text" },
-];
+    // Permanent Address
+    addressLine1: "123 MG Road",
+    addressLine2: "Near Metro Station",
+    city: "Bangalore",
+    state: "Karnataka",
+    pincode: "560001",
 
+    // Temporary Address
+    temp_addressLine1: "5A Block C, Rent Complex",
+    temp_addressLine2: "Near Old Railway Station",
+    temp_city: "Hyderabad",
+    temp_state: "Telangana",
+    temp_pincode: "500001",
+
+    // Consumer-only fields
+    gst: "29ABCDE1234F1Z5",
+    aadhar: "123456789012",
+  };
+
+  // Basic fields differ for consumer vs delivery
+  const basicFields = type === "delivery"
+    ? [
+        { key: "name", label: "Full Name", icon: "user" },
+        { key: "number", label: "Mobile Number", icon: "phone" },
+        { key: "email", label: "Email Address", icon: "mail" },
+      ]
+    : [
+        { key: "name", label: "Full Name", icon: "user" },
+        { key: "firmName", label: "Firm Name", icon: "briefcase" },
+        { key: "number", label: "Mobile Number", icon: "phone" },
+        { key: "email", label: "Email Address", icon: "mail" },
+      ];
+
+  const tempAddressFields = [
+    { key: "temp_addressLine1", label: "Address Line 1", icon: "map-pin" },
+    { key: "temp_addressLine2", label: "Address Line 2", icon: "map" },
+    { key: "temp_city", label: "City", icon: "building" },
+    { key: "temp_state", label: "State", icon: "globe" },
+    { key: "temp_pincode", label: "Pincode", icon: "hash" },
+  ];
+
+  const permAddressFields = [
+    { key: "addressLine1", label: "Address Line 1", icon: "map-pin" },
+    { key: "addressLine2", label: "Address Line 2", icon: "map" },
+    { key: "city", label: "City", icon: "building" },
+    { key: "state", label: "State", icon: "globe" },
+    { key: "pincode", label: "Pincode", icon: "hash" },
+  ];
 
   return (
     <LinearGradient
@@ -86,36 +112,36 @@ const profileFields = [
         easing="ease-out-cubic"
         style={styles.bottomContainer}
       >
-       
-
         <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Edit Button */}
+          <View style={{ alignItems: "flex-end", marginVertical: 16 }}>
+            <SmallSideButton
+              title="Edit Profile"
+              onPress={() => navigation.navigate("ProfileForm")}
+              icon={
+                <AntDesign
+                  name="edit"
+                  size={18}
+                  color="white"
+                  style={{ fontWeight: "700" }}
+                />
+              }
+            />
+          </View>
 
-       <View style={{ alignItems: "flex-end", marginVertical: 16 }}>
-          <SmallSideButton
-            title="Edit Profile"
-            onPress={() => navigation.navigate("ProfileForm")}
-            icon={
-              <AntDesign
-                name="edit"
-                size={18}
-                color="white"
-                style={{ fontWeight: "700" }}
-              />
-            }
-          />
-        </View>
-
-          {/* Profile Picture */}
+          {/* Avatar */}
           <View style={styles.profilePicture}>
             <View style={styles.avatar}>
               <Feather name="user" size={40} color="white" />
             </View>
             <Text style={styles.profileName}>{profile.name}</Text>
-            <Text style={styles.profileFirm}>{profile.firmName}</Text>
+            {type !== "delivery" && (
+              <Text style={styles.profileFirm}>{profile.firmName}</Text>
+            )}
           </View>
 
-          {/* Profile Fields */}
-          {profileFields.map((field) => (
+          {/* Basic Info */}
+          {basicFields.map((field) => (
             <View key={field.key} style={styles.fieldCard}>
               <View style={styles.fieldHeader}>
                 <View style={styles.iconWrapper}>
@@ -126,6 +152,73 @@ const profileFields = [
               <Text style={styles.fieldValue}>{profile[field.key]}</Text>
             </View>
           ))}
+
+          {/* Delivery person: Temporary + Permanent Address */}
+          {type === "delivery" && (
+            <>
+              <Text style={styles.sectionTitle}>Temporary Address</Text>
+              {tempAddressFields.map((field) => (
+                <View key={field.key} style={styles.fieldCard}>
+                  <View style={styles.fieldHeader}>
+                    <View style={styles.iconWrapper}>
+                      <Feather name={field.icon} size={18} color={COLORS.primary} />
+                    </View>
+                    <Text style={styles.fieldLabel}>{field.label}</Text>
+                  </View>
+                  <Text style={styles.fieldValue}>{profile[field.key]}</Text>
+                </View>
+              ))}
+
+              <Text style={styles.sectionTitle}>Permanent Address</Text>
+              {permAddressFields.map((field) => (
+                <View key={field.key} style={styles.fieldCard}>
+                  <View style={styles.fieldHeader}>
+                    <View style={styles.iconWrapper}>
+                      <Feather name={field.icon} size={18} color={COLORS.primary} />
+                    </View>
+                    <Text style={styles.fieldLabel}>{field.label}</Text>
+                  </View>
+                  <Text style={styles.fieldValue}>{profile[field.key]}</Text>
+                </View>
+              ))}
+            </>
+          )}
+
+          {/* Consumer: Permanent Address + GST & Aadhar */}
+          {type !== "delivery" && (
+            <>
+              {permAddressFields.map((field) => (
+                <View key={field.key} style={styles.fieldCard}>
+                  <View style={styles.fieldHeader}>
+                    <View style={styles.iconWrapper}>
+                      <Feather name={field.icon} size={18} color={COLORS.primary} />
+                    </View>
+                    <Text style={styles.fieldLabel}>{field.label}</Text>
+                  </View>
+                  <Text style={styles.fieldValue}>{profile[field.key]}</Text>
+                </View>
+              ))}
+
+              <View style={styles.fieldCard}>
+                <View style={styles.fieldHeader}>
+                  <View style={styles.iconWrapper}>
+                    <Feather name="credit-card" size={18} color={COLORS.primary} />
+                  </View>
+                  <Text style={styles.fieldLabel}>GST Number</Text>
+                </View>
+                <Text style={styles.fieldValue}>{profile.gst}</Text>
+              </View>
+              <View style={styles.fieldCard}>
+                <View style={styles.fieldHeader}>
+                  <View style={styles.iconWrapper}>
+                    <Feather name="file-text" size={18} color={COLORS.primary} />
+                  </View>
+                  <Text style={styles.fieldLabel}>Aadhar Number</Text>
+                </View>
+                <Text style={styles.fieldValue}>{profile.aadhar}</Text>
+              </View>
+            </>
+          )}
 
           {/* Account Status */}
           <View style={styles.statusCard}>
@@ -199,6 +292,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "gray",
   },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginVertical: 10,
+    color: COLORS.textLight,
+  },
   fieldCard: {
     backgroundColor: COLORS.white,
     borderRadius: 12,
@@ -222,7 +321,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 15,
     fontWeight: "700",
-    color:COLORS.textLight,
+    color: COLORS.textLight,
   },
   fieldValue: {
     fontSize: 15,

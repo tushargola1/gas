@@ -1,16 +1,21 @@
 import { View, StyleSheet, Image } from "react-native";
-import {
-  Feather,
-  FontAwesome5,
-} from "@expo/vector-icons";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../styles/Theme";
 import { LinearGradient } from "expo-linear-gradient";
 import Button from "../../component/button/Button";
 import SmallSideButton from "../../component/button/SmallSideButton";
+import { useUserType } from "../../hooks/UserTypeContext"; // 👈 import here
 
 const LoginSelection = () => {
   const navigation = useNavigation();
+  const { setType } = useUserType(); // 👈 get setter from context
+
+  // Set type and navigate to Login screen
+  const handleLoginSelection = (userType) => {
+    setType(userType);
+    navigation.navigate("login");
+  };
 
   return (
     <LinearGradient
@@ -38,14 +43,14 @@ const LoginSelection = () => {
           }
           style={{ backgroundColor: COLORS.cardBackground }}
           textStyle={{ color: COLORS.textDark }}
-           onPress={() => navigation.navigate("login", { type: "consumer" })}
+          onPress={() => handleLoginSelection("consumer")} // 👈 use handler here
         />
 
         <SmallSideButton
           title="Delivery Partner Login"
-        onPress={() => navigation.navigate("login", { type: "delivery" })}
+          onPress={() => handleLoginSelection("delivery")} // 👈 use handler here
           icon={<Feather name="truck" size={24} color={COLORS.white} />}
-          style={{ backgroundColor: COLORS.primary , width: 'fit-content' , alignSelf: 'center'}}
+          style={{ backgroundColor: COLORS.primary, alignSelf: "center" }}
         />
       </View>
     </LinearGradient>
@@ -78,6 +83,5 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 320,
     gap: 15,
-    
   },
 });

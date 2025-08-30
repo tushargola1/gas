@@ -21,6 +21,7 @@ import { COLORS, gaps } from "../../../styles/Theme";
 import SmallSideButton from "../../../component/button/SmallSideButton";
 import LinearGradientButton from "../../../component/button/LinearGradientButton";
 import HistoryCard from "../../../component/HistoryCard";
+import { useUserType } from "../../../hooks/UserTypeContext";
 
 /* ================== MOCK DATA ================== */
 const STATUS_TABS = [
@@ -43,6 +44,8 @@ const STATUS_COLORS = {
 const MOCK_ORDERS = [
   {
     id: "1",
+    user:'dummy',
+    phone_number:"9953612444",
     orderId: "#00250",
     status: "out_for_delivery",
     cylinder: "Commercial 25KG",
@@ -88,6 +91,7 @@ export default function History({ navigation }) {
   const insets = useSafeAreaInsets();
   const [activeStatus, setActiveStatus] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const { type } = useUserType();
 
   const filteredOrders = useMemo(() => {
     return activeStatus === "all"
@@ -95,113 +99,12 @@ export default function History({ navigation }) {
       : MOCK_ORDERS.filter((o) => o.status === activeStatus);
   }, [activeStatus]);
 
-  // const renderOrder = ({ item }) => {
-  //   // const statusColor = STATUS_COLORS[item.status] || {
-  //   //   bg: "#E5E7EB",
-  //   //   text: "#374151",
-  //   // };
-
-  //   return (
-  //     <View style={styles.card}>
-  //       <View style={styles.cardHeader}>
-  //         <View
-  //           style={[styles.statusBadge, { backgroundColor: statusColor.bg }]}
-  //         >
-  //           <Text style={[styles.statusText, { color: statusColor.text }]}>
-  //             {item.status.replace(/_/g, " ").toUpperCase()}
-  //           </Text>
-  //         </View>
-  //         <Text style={styles.orderId}>{item.orderId}</Text>
-  //       </View>
-
-  //       <Text style={styles.cylinderText}>
-  //         Cylinder: {item.cylinder} | {item.price.toFixed(2)} {item.quantity}{" "}
-  //         {item.total}
-  //       </Text>
-
-  //       <Text style={styles.addressText}>{item.address}</Text>
-
-  //       <View style={styles.row}>
-  //         <View style={{ flexDirection: "row", alignItems: "center" }}>
-  //           <MaterialIcons
-  //             name="speaker-notes"
-  //             size={14}
-  //             color={COLORS.textLight}
-  //           />
-  //           <Text style={[styles.noteText, { marginLeft: 5 }]}>
-  //             {item.bookingNote}
-  //           </Text>
-  //         </View>
-  //         <Text style={styles.dateText}>
-  //           {new Date(item.deliveryDate).toLocaleDateString("en-IN", {
-  //             day: "numeric",
-  //             month: "short",
-  //             year: "numeric",
-  //           })}{" "}
-  //           {new Date(item.deliveryDate).toLocaleTimeString("en-IN", {
-  //             hour: "2-digit",
-  //             minute: "2-digit",
-  //           })}
-  //         </Text>
-  //       </View>
-
-  //       <View style={styles.buttonRow}>
-  //         <Pressable
-  //           style={[
-  //             styles.button,
-  //             {
-  //               backgroundColor: COLORS.primary,
-  //               flexDirection: "row",
-  //               alignItems: "center",
-  //               justifyContent: "center",
-  //             },
-  //           ]}
-  //           onPress={() => setSelectedOrder(item)}
-  //         >
-  //           <FontAwesome name="eye" size={20} color="white" />
-  //           <Text style={[styles.buttonText, { marginLeft: 8 }]}>
-  //             View Details
-  //           </Text>
-  //         </Pressable>
-
-  //         <Pressable
-  //           style={[
-  //             styles.button,
-  //             {
-  //               backgroundColor: COLORS.white,
-  //               borderWidth: 1,
-  //               borderColor: COLORS.primary,
-  //               flexDirection: "row",
-  //               alignItems: "center",
-  //               justifyContent: "center",
-  //             },
-  //           ]}
-  //           onPress={() => alert("Invoice clicked")}
-  //         >
-  //           <FontAwesome name="download" size={20} color={COLORS.primary} />
-  //           <Text
-  //             style={[
-  //               styles.buttonText,
-  //               {
-  //                 color: COLORS.primary,
-  //                 marginLeft: 8,
-  //                 fontWeight: "700",
-  //                 fontSize: 15,
-  //               },
-  //             ]}
-  //           >
-  //             Invoice
-  //           </Text>
-  //         </Pressable>
-  //       </View>
-  //     </View>
-  //   );
-  // };
   const renderOrder = ({ item }) => (
     <HistoryCard
       item={item}
       onView={setSelectedOrder}
       onInvoice={() => alert("Invoice clicked")}
+      type={type}
     />
   );
   return (
@@ -241,20 +144,27 @@ export default function History({ navigation }) {
         easing="ease-out-cubic"
         style={styles.bottomContainer}
       >
-        <View style={{ alignItems: "flex-end", marginTop: 15 }}>
-          <SmallSideButton
-            title="New Booking"
-            onPress={() => navigation.navigate("booking")}
-            icon={
-              <Ionicons
-                name="add-outline"
-                size={18}
-                color="white"
-                style={{ fontWeight: "700" }}
+        {type === "consumer" ? (
+          <>
+            <View style={{ alignItems: "flex-end", marginTop: 15 }}>
+              <SmallSideButton
+                title="New Booking"
+                onPress={() => navigation.navigate("booking")}
+                icon={
+                  <Ionicons
+                    name="add-outline"
+                    size={18}
+                    color="white"
+                    style={{ fontWeight: "700" }}
+                  />
+                }
               />
-            }
-          />
-        </View>
+            </View>
+          </>
+        ) : (
+          <></>
+        )}
+
         <FlatList
           data={filteredOrders}
           keyExtractor={(item) => item.id}
@@ -327,18 +237,24 @@ export default function History({ navigation }) {
                   >
                     No Bookings Found
                   </Text>
-                  <LinearGradientButton
-                    title="New Booking"
-                    onPress={() => navigation.navigate("newAddress")}
-                    icon={
-                      <Ionicons
-                        name="add-outline"
-                        size={18}
-                        color="white"
-                        style={{ fontWeight: "700" }}
+                  {type === "consumer" ? (
+                    <>
+                      <LinearGradientButton
+                        title="New Booking"
+                        onPress={() => navigation.navigate("newAddress")}
+                        icon={
+                          <Ionicons
+                            name="add-outline"
+                            size={18}
+                            color="white"
+                            style={{ fontWeight: "700" }}
+                          />
+                        }
                       />
-                    }
-                  />
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </View>
               )}
             </>
@@ -368,61 +284,135 @@ export default function History({ navigation }) {
 
             {selectedOrder && (
               <View>
-                {/* Booking Timeline */}
-            {selectedOrder.history.map((h, idx) => {
-  const statusKey = h.status.toLowerCase(); // normalize
-  const color = STATUS_COLORS[statusKey]?.text || COLORS.textDark;
-
-  return (
-    <View key={idx} style={styles.timelineItem}>
-      <Text style={[styles.timelineStatus, { color }]}>
-        {h.status}
-      </Text>
-      <Text style={styles.timelineMessage}>{h.message}</Text>
-      <Text style={styles.timelineUser}>
-        {h.user} at {h.time}
-      </Text>
-    </View>
-  );
-})}
-
-
-                {/* Buttons */}
-                <View style={styles.modalButtonRow}>
-                  <Pressable
-                    style={[
-                      styles.button,
-                      {
-                        backgroundColor: COLORS.primary,
+                {/* Delivery guy sees detailed delivery info */}
+                {type === "delivery" ? (
+                  <>
+                    <View
+                      style={{
+                        marginBottom: 16,
+                        padding: 12,
+                        backgroundColor: "#f9f9f9",
+                        borderRadius: 8,
                         borderWidth: 1,
-                        borderColor: COLORS.primary,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      },
-                    ]}
-                    onPress={() => alert("Invoice clicked")}
-                  >
-                    <FontAwesome
-                      name="download"
-                      size={20}
-                      color={COLORS.white}
-                    />
-                    <Text
-                      style={[
-                        styles.buttonText,
-                        {
-                          color: COLORS.white,
-                          marginLeft: 8,
-                          fontWeight: "700",
-                          fontSize: 16,
-                        },
-                      ]}
+                        borderColor: "#ddd",
+                      }}
                     >
-                      Invoice
-                    </Text>
-                  </Pressable>
-                </View>
+                      {/* Each detail row */}
+                      {[
+                        { label: "Cylinder", value: selectedOrder.cylinder },
+                        { label: "Quantity", value: selectedOrder.quantity },
+                        { label: "Weight", value: "25 kg" },
+                        { label: "Price", value: `₹${selectedOrder.price}` },
+                        { label: "Total", value: `₹${selectedOrder.total}` },
+                        { label: "Address", value: selectedOrder.address },
+                        { label: "Phone", value: selectedOrder.phone_number },
+                        {
+                          label: "Delivery Date",
+                          value: new Date(
+                            selectedOrder.deliveryDate
+                          ).toLocaleString(),
+                        },
+                        {
+                          label: "Booking Note",
+                          value: selectedOrder.bookingNote,
+                        },
+                      ].map(({ label, value }, idx) => (
+                        <View
+                          key={idx}
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingVertical: 6,
+                            borderBottomWidth: idx === 8 ? 0 : 1, // no border for last item
+                            borderBottomColor: "#eee",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontWeight: "600",
+                              color: "#333",
+                              fontSize: 16,
+                            }}
+                          >
+                            {label}
+                          </Text>
+                          <Text
+                            style={{
+                              flex: 1,
+                              textAlign: "right",
+                              color: "#555",
+                              fontSize: 16,
+                              marginLeft: 10,
+                            }}
+                            numberOfLines={2}
+                          >
+                            {value}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    {/* Non-delivery user sees booking timeline and invoice button */}
+                    {selectedOrder.history.map((h, idx) => {
+                      const statusKey = h.status.toLowerCase();
+                      const color =
+                        STATUS_COLORS[statusKey]?.text || COLORS.textDark;
+
+                      return (
+                        <View key={idx} style={styles.timelineItem}>
+                          <Text style={[styles.timelineStatus, { color }]}>
+                            {h.status}
+                          </Text>
+                          <Text style={styles.timelineMessage}>
+                            {h.message}
+                          </Text>
+                          <Text style={styles.timelineUser}>
+                            {h.user} at {h.time}
+                          </Text>
+                        </View>
+                      );
+                    })}
+
+                    {/* Invoice button */}
+                    <View style={styles.modalButtonRow}>
+                      <Pressable
+                        style={[
+                          styles.button,
+                          {
+                            backgroundColor: COLORS.primary,
+                            borderWidth: 1,
+                            borderColor: COLORS.primary,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          },
+                        ]}
+                        onPress={() => alert("Invoice clicked")}
+                      >
+                        <FontAwesome
+                          name="download"
+                          size={20}
+                          color={COLORS.white}
+                        />
+                        <Text
+                          style={[
+                            styles.buttonText,
+                            {
+                              color: COLORS.white,
+                              marginLeft: 8,
+                              fontWeight: "700",
+                              fontSize: 16,
+                            },
+                          ]}
+                        >
+                          Invoice
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </>
+                )}
               </View>
             )}
           </View>
