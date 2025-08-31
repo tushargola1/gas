@@ -1,9 +1,10 @@
+// ✅ No changes except added Cancel Delivery button for delivery partner
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useRoute } from "@react-navigation/native"; // ✅ import route
+import { useRoute } from "@react-navigation/native";
 import { COLORS } from "../styles/Theme";
 
 const STATUS_COLORS = {
@@ -14,8 +15,8 @@ const STATUS_COLORS = {
   completed: { bg: "#DBEAFE", text: "#1D4ED8" },
 };
 
-export default function HistoryCard({ item, onView, onInvoice, type }) {
-  const route = useRoute(); // ✅ get current route
+export default function HistoryCard({ item, onView, onInvoice, type, onCancel }) {
+  const route = useRoute();
   const statusColor = STATUS_COLORS[item.status] || {
     bg: "#E5E7EB",
     text: "#374151",
@@ -35,8 +36,7 @@ export default function HistoryCard({ item, onView, onInvoice, type }) {
 
       {/* Cylinder Info */}
       <Text style={styles.cylinderText}>
-        Cylinder: {item.cylinder} | ₹{item.price.toFixed(2)} × {item.quantity} =
-        ₹{item.total}
+        Cylinder: {item.cylinder} | ₹{item.price.toFixed(2)} × {item.quantity} = ₹{item.total}
       </Text>
 
       {/* Address */}
@@ -45,14 +45,8 @@ export default function HistoryCard({ item, onView, onInvoice, type }) {
       {/* Note + Date */}
       <View style={styles.row}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons
-            name="speaker-notes"
-            size={14}
-            color={COLORS.textLight}
-          />
-          <Text style={[styles.noteText, { marginLeft: 5 }]}>
-            {item.bookingNote}
-          </Text>
+          <MaterialIcons name="speaker-notes" size={14} color={COLORS.textLight} />
+          <Text style={[styles.noteText, { marginLeft: 5 }]}>{item.bookingNote}</Text>
         </View>
         <Text style={styles.dateText}>
           {new Date(item.deliveryDate).toLocaleDateString("en-IN", {
@@ -67,37 +61,31 @@ export default function HistoryCard({ item, onView, onInvoice, type }) {
         </Text>
       </View>
 
-      {/* ✅ Show actions only if NOT on dashboard */}
+      {/* Actions */}
       {route.name !== "dashboard" && (
         <View style={styles.buttonRow}>
-          <Pressable
-            style={[styles.button, styles.viewBtn]}
-            onPress={() => onView(item)}
-          >
+          {/* View */}
+          <Pressable style={[styles.button, styles.viewBtn]} onPress={() => onView(item)}>
             <FontAwesome name="eye" size={20} color="white" />
-            <Text
-              style={[
-                styles.buttonText,
-                { marginLeft: 8, color: COLORS.white },
-              ]}
-            >
+            <Text style={[styles.buttonText, { marginLeft: 8, color: COLORS.white }]}>
               View Details
             </Text>
           </Pressable>
+
+          {/* Invoice only for consumer */}
           {type === "consumer" ? (
-            <>
-              <Pressable
-                style={[styles.button, styles.invoiceBtn]}
-                onPress={() => onInvoice(item)}
-              >
-                <FontAwesome name="download" size={20} color={COLORS.primary} />
-                <Text style={[styles.buttonText, styles.invoiceText]}>
-                  Invoice
-                </Text>
-              </Pressable>
-            </>
+            <Pressable style={[styles.button, styles.invoiceBtn]} onPress={() => onInvoice(item)}>
+              <FontAwesome name="download" size={20} color={COLORS.primary} />
+              <Text style={[styles.buttonText, styles.invoiceText]}>Invoice</Text>
+            </Pressable>
           ) : (
-            <></>
+            // ✅ Cancel Delivery only for delivery partner
+            <Pressable style={[styles.button, styles.cancelBtn]} onPress={() => onCancel(item)}>
+              <Ionicons name="close-circle" size={20} color="white" />
+              <Text style={[styles.buttonText, { marginLeft: 8, color: COLORS.white }]}>
+                Cancel Delivery
+              </Text>
+            </Pressable>
           )}
         </View>
       )}
@@ -114,11 +102,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 6,
-  },
+  cardHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 6 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12 },
   statusText: { fontWeight: "600", fontSize: 12 },
   orderId: { fontWeight: "bold" },
@@ -126,16 +110,8 @@ const styles = StyleSheet.create({
   addressText: { fontSize: 14, color: COLORS.textLight, marginBottom: 6 },
   noteText: { fontSize: 13, color: COLORS.textLight },
   dateText: { fontSize: 12, color: COLORS.textDark },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-  },
+  row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+  buttonRow: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap" },
   button: {
     flex: 1,
     padding: 10,
@@ -146,18 +122,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: { fontWeight: "bold" },
-  viewBtn: {
-    backgroundColor: COLORS.primary,
-  },
-  invoiceBtn: {
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-  },
-  invoiceText: {
-    color: COLORS.primary,
-    fontWeight: "700",
-    fontSize: 15,
-    marginLeft: 8,
-  },
+  viewBtn: { backgroundColor: COLORS.primary },
+  invoiceBtn: { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.primary },
+  invoiceText: { color: COLORS.primary, fontWeight: "700", fontSize: 15, marginLeft: 8 },
+  cancelBtn: { backgroundColor: "#dc2626" }, // red cancel button
 });

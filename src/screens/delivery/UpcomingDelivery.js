@@ -10,6 +10,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
@@ -18,7 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { COLORS, gaps } from "../../styles/Theme";
 import HistoryCard from "../../component/HistoryCard";
-
+import { Picker } from "@react-native-picker/picker";
 const MOCK_DELIVERIES = [
   {
     id: "1",
@@ -43,12 +44,28 @@ export default function UpcomingDelivery({ navigation }) {
   const [enteredOtp, setEnteredOtp] = useState("");
   const [otpResult, setOtpResult] = useState(null); // "success" | "fail"
 
+  const [cancelVisible, setCancelVisible] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelNotes, setCancelNotes] = useState("");
+
   const handleOpenOtp = () => {
     setSelectedOrder(null); // close details first
     setTimeout(() => {
       setOtpVisible(true); // then open OTP modal
     }, 300);
   };
+
+ const handleCancelConfirm = () => {
+  if (!cancelReason || !cancelNotes.trim()) {
+    Alert.alert("Missing Information ⚠️", "Please select a reason and add notes before cancelling.");
+    return;
+  }
+
+  setCancelVisible(false);
+  Alert.alert("Cancelled ✅", "Delivery has been cancelled successfully.");
+  setCancelReason("");
+  setCancelNotes("");
+};
 
   const handleVerifyOtp = () => {
     const correctOtp = "1234";
@@ -85,7 +102,10 @@ export default function UpcomingDelivery({ navigation }) {
 
       {/* Header */}
       <View style={styles.headerContainer}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.menuButton}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={styles.menuButton}
+        >
           <Ionicons name="arrow-back" size={24} color="white" />
         </Pressable>
         <View style={styles.headerTitleWrapper}>
@@ -119,6 +139,7 @@ export default function UpcomingDelivery({ navigation }) {
                 onView={setSelectedOrder}
                 onInvoice={() => {}}
                 type="delivery"
+                onCancel={() => setCancelVisible(true)} // ✅ open cancel modal
               />
             )}
             contentContainerStyle={{ marginVertical: 20 }}
@@ -127,58 +148,55 @@ export default function UpcomingDelivery({ navigation }) {
       </Animatable.View>
 
       {/* Modal for Order Details */}
-     <Modal
-  visible={!!selectedOrder}
-  transparent
-  animationType="fade"
-  onRequestClose={() => setSelectedOrder(null)}
->
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContent}>
-      <View style={styles.modalHeader}>
-        <Text style={styles.modalTitle}>
-          Order: {selectedOrder?.orderId}
-        </Text>
-        <Pressable onPress={() => setSelectedOrder(null)}>
-          <Ionicons name="close" size={24} color={COLORS.textDark} />
-        </Pressable>
-      </View>
-
-      {/* Consumer Details */}
-      {selectedOrder && (
-        <View style={styles.detailsBox}>
-          {[
-            { label: "Customer", value: selectedOrder.user },
-            { label: "Phone", value: selectedOrder.phone_number },
-            { label: "Cylinder", value: selectedOrder.cylinder },
-            { label: "Quantity", value: selectedOrder.quantity },
-            { label: "Price", value: `₹${selectedOrder.price}` },
-            { label: "Total", value: `₹${selectedOrder.total}` },
-            { label: "Address", value: selectedOrder.address },
-            {
-              label: "Delivery Date",
-              value: new Date(
-                selectedOrder.deliveryDate
-              ).toLocaleString(),
-            },
-          ].map(({ label, value }, idx) => (
-            <View key={idx} style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{label}</Text>
-              <Text style={styles.detailValue}>{value}</Text>
+      <Modal
+        visible={!!selectedOrder}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedOrder(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                Order: {selectedOrder?.orderId}
+              </Text>
+              <Pressable onPress={() => setSelectedOrder(null)}>
+                <Ionicons name="close" size={24} color={COLORS.textDark} />
+              </Pressable>
             </View>
-          ))}
-        </View>
-        
-      )}
-       <Pressable style={styles.verifyButton} onPress={handleOpenOtp}>
+
+            {/* Consumer Details */}
+            {selectedOrder && (
+              <View style={styles.detailsBox}>
+                {[
+                  { label: "Customer", value: selectedOrder.user },
+                  { label: "Phone", value: selectedOrder.phone_number },
+                  { label: "Cylinder", value: selectedOrder.cylinder },
+                  { label: "Quantity", value: selectedOrder.quantity },
+                  { label: "Price", value: `₹${selectedOrder.price}` },
+                  { label: "Total", value: `₹${selectedOrder.total}` },
+                  { label: "Address", value: selectedOrder.address },
+                  {
+                    label: "Delivery Date",
+                    value: new Date(
+                      selectedOrder.deliveryDate
+                    ).toLocaleString(),
+                  },
+                ].map(({ label, value }, idx) => (
+                  <View key={idx} style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>{label}</Text>
+                    <Text style={styles.detailValue}>{value}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+            <Pressable style={styles.verifyButton} onPress={handleOpenOtp}>
               <Text style={styles.verifyButtonText}>Verify Delivery</Text>
             </Pressable>
-    </View>
-    
-  </View>
-</Modal>
+          </View>
+        </View>
+      </Modal>
 
-  
       {/* OTP Verification Modal */}
       <Modal
         visible={otpVisible}
@@ -212,7 +230,10 @@ export default function UpcomingDelivery({ navigation }) {
                   value={enteredOtp}
                   onChangeText={setEnteredOtp}
                 />
-                <Pressable style={styles.verifyButton} onPress={handleVerifyOtp}>
+                <Pressable
+                  style={styles.verifyButton}
+                  onPress={handleVerifyOtp}
+                >
                   <Text style={styles.verifyButtonText}>Submit OTP</Text>
                 </Pressable>
               </>
@@ -220,6 +241,59 @@ export default function UpcomingDelivery({ navigation }) {
           </View>
         </KeyboardAvoidingView>
       </Modal>
+
+      {/* Cancel Delivery Modal */}
+<Modal visible={cancelVisible} animationType="slide" transparent>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Cancel Delivery</Text>
+
+      {/* Reason Dropdown */}
+      <Text style={styles.label}>Reason</Text>
+      <View style={styles.dropdownWrapper}>
+        <Picker
+          selectedValue={cancelReason}
+          onValueChange={(value) => setCancelReason(value)}
+        >
+          <Picker.Item label="Select a reason..." value="" />
+          <Picker.Item label="Customer not available" value="not_available" />
+          <Picker.Item label="Incorrect address" value="wrong_address" />
+          <Picker.Item label="Stock unavailable" value="out_of_stock" />
+          <Picker.Item label="Other" value="other" />
+        </Picker>
+      </View>
+
+      {/* Notes */}
+      <Text style={styles.label}>Additional Notes</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Write notes here..."
+        value={cancelNotes}
+        onChangeText={setCancelNotes}
+        multiline
+      />
+
+      {/* Buttons */}
+      <View style={styles.buttonRow}>
+        <Pressable
+          style={[styles.button, styles.cancelBtn]}
+          onPress={() => setCancelVisible(false)}
+        >
+          <Text style={styles.cancelText}>Close</Text>
+        </Pressable>
+
+        <Pressable
+          style={[styles.button, styles.confirmBtn]}
+          onPress={handleCancelConfirm}
+        >
+          <Text style={styles.confirmText}>Confirm Cancel</Text>
+        </Pressable>
+      </View>
+    </View>
+  </View>
+</Modal>
+
+
     </LinearGradient>
   );
 }
@@ -266,7 +340,7 @@ const styles = StyleSheet.create({
   },
   emptyImage: { width: "100%", height: 280, resizeMode: "contain" },
   emptyText: { fontSize: 18, color: "#666", marginTop: 10, fontWeight: "bold" },
-   /* Modal */
+  /* Modal */
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.6)",
@@ -340,6 +414,78 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   resultBox: { alignItems: "center" },
-  successText: { fontSize: 18, fontWeight: "600", color: "green", marginTop: 10 },
+  successText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "green",
+    marginTop: 10,
+  },
   failText: { fontSize: 18, fontWeight: "600", color: "red", marginTop: 10 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  label: {
+    fontSize: 14,
+    marginTop: 8,
+    marginBottom: 4,
+    fontWeight: "500",
+  },
+  dropdownWrapper: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 8,
+    minHeight: 60,
+    textAlignVertical: "top",
+    marginBottom: 12,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 12,
+  },
+  button: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    marginHorizontal: 5,
+    alignItems: "center",
+  },
+  cancelBtn: {
+    backgroundColor: "#E5E7EB",
+  },
+  confirmBtn: {
+    backgroundColor: "#DC2626",
+  },
+  cancelText: {
+    color: "#374151",
+    fontWeight: "600",
+  },
+  confirmText: {
+    color: "#fff",
+    fontWeight: "700",
+  },
+
 });
